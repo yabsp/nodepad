@@ -1,73 +1,110 @@
-# React + TypeScript + Vite
+# Nodepad
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Nodepad is a collaborative text editor built on a peer-to-peer architecture using Y.js and WebRTC. Multiple users can edit a shared document in real time directly from their browsers.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
 
-## React Compiler
+- [Y.js](https://github.com/yjs/yjs) – CRDT-based shared document model
+- [y-webrtc](https://github.com/yjs/y-webrtc) – WebRTC-based peer-to-peer provider for y.js
+- [Tiptap](https://tiptap.dev/) – Headless, framework-agnostic rich-text editor built on ProseMirror
+- [React](https://react.dev/) – Component-based UI library
+- [Vite](https://vitejs.dev/) – Fast development bundler and dev server
+- [Node.js](https://nodejs.org/) – JavaScript runtime
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js (LTS recommended)
+- npm or yarn
+- Modern browser with WebRTC support
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Architecture
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Nodepad uses Y.js for conflict-free collaborative editing. Synchronisation between peers happens via WebRTC data channels provided by y.webrtc. A signaling server is required only to help peers discover each other and establish the WebRTC connections – it does not store or manage document content.
+
+Because we could not reliably use the public Y.js signaling servers for this project, you are required to run your own signaling server locally.
+
+---
+
+## Functionalities
+- Single shared document
+- Real-time collaborative editing via Y.js and WebRTC
+- Peer-to-peer synchronisation (no central document server, using signaling server)
+
+---
+
+## Getting Started
+
+### 1. Install Dependencies
+This installes all of the dependencies for nodepad.
+
+```bash
+npm install
+# or
+yarn install
+```
+### 2. Start signaling server
+
+This starts the WebSocket-based signaling server that y-webrtc uses to establish connections between peers.
+
+```bash
+npm run server
+# or
+yarn server
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3. Start Clients
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+If the client is on a different machine you will need to change localhost to the ip-address of the signaling server in ```src/y-webrtc-test.ts```:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+ ```js
+ // [LINE 8] 
+ const provider = new WebrtcProvider('your-room-name', ydoc, { signaling: ['ws://localhost:4444'] }) // TODO Change localhost to ip-address of signaling server
+ ```
+
+This starts a preview of the website and connects to one document via the signaling server. 
+
+```bash
+npm run dev
+# or
+yarn dev
 ```
+
+Then open the website (default:http://localhost:5173). 
+
+---
+
+## Known Problems
+
+Some modern browsers like Zen Browser (Firefox Fork) seem to have trouble connecting due to ICE-candidates. Try Safari or Google Chrome if you having troubles with ICE (check browser logs).
+
+---
+
+## Roadmap
+
+- Visible shared cursors
+- Editor Toolbar 
+  - Bold
+  - Italic
+  - Underlined
+  - Superscript
+  - Subscript
+- UI built with Tiptap
+- Client awareness list
+
+---
+
+## Contributing
+
+Contributions are not allowed since this is a graded project for the seminar "New Trends for Local and Global Interconnects for P2P Applications" of Christian Tschudin at University of Basel.
+
+---
+
+## License
+
+Nodepad is licensed under the MIT License.

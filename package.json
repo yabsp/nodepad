@@ -11,8 +11,13 @@
     "server": "PORT=4444 node server/signaling-server.js"
   },
   "dependencies": {
+    "@tiptap/extension-collaboration": "^3.11.0",
+    "@tiptap/extension-collaboration-caret": "^3.11.0",
+    "@tiptap/react": "^3.11.0",
+    "@tiptap/starter-kit": "^3.11.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "y-prosemirror": "^1.3.7",
     "y-webrtc": "^10.3.0",
     "yjs": "^13.6.27"
   },

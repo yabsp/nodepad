@@ -66,3 +66,29 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.ProseMirror {
+    border-radius: 6px;
+    padding: 0.75rem;
+    min-height: 200px;
+    outline: none;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+    .ProseMirror {
+        border: 2px solid #000;
+        background: #ffffff;
+        color: #000000;
+    }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    .ProseMirror {
+        border: 2px solid #fff;
+        background: #242424;
+        color: #ffffff;
+    }
+}

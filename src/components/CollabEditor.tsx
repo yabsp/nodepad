@@ -51,20 +51,10 @@ const CollabEditor: React.FC = () => {
     if (!editor) {
         return null
     }
-
     return (
         <div style={{ padding: '1rem', maxWidth: 800, margin: '0 auto' }}>
             <h1>Nodepad – Collaborative Text Editor</h1>
-            <div
-                style={{
-                    border: '1px solid #ddd',
-                    borderRadius: 4,
-                    padding: '0.75rem',
-                    minHeight: '200px',
-                }}
-            >
-                <EditorContent editor={editor} />
-            </div>
+            <EditorContent editor={editor} />
         </div>
     )
 }

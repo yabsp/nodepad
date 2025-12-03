@@ -74,7 +74,7 @@ const CollabEditor: React.FC = () => {
     }
     return (
         <div style={{ padding: '1rem', maxWidth: 800, margin: '0 auto' }}>
-            <h1>Nodepad – Collaborative Text Editor</h1>
+            <h1>Nodepad</h1>
 
             {/* Toolbar */}
             <div style={{ marginBottom: '0.5rem', display: 'flex', gap: '0.5rem' }}>
@@ -113,7 +113,6 @@ const CollabEditor: React.FC = () => {
                 <button
                     className={editor.isActive('highlight') ? 'active' : ''}
                     onClick={() => editor.chain().focus().toggleHighlight().run()}
-                    style={{ backgroundColor: 'yellow' }}
                 >
                     H
                 </button>

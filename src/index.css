@@ -88,6 +88,16 @@ button:focus-visible {
         border: 2px solid #000 !important;
         color: #000 !important;
     }
+
+    .highlight-button {
+        background-color: yellow;
+        color: black;
+    }
+
+    mark {
+        background-color: yellow;
+        color: black;
+    }
 }
 
 /* Dark mode */
@@ -102,4 +112,15 @@ button:focus-visible {
         border: 2px solid #fff !important;
         color: #fff !important;
     }
+
+    .highlight-button {
+        background-color: #4c6fff;
+        color: white;
+    }
+
+    mark {
+        background-color: #4c6fff;
+        color: white; /* keep white text */
+    }
+
 }

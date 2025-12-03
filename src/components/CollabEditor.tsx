@@ -75,6 +75,7 @@ const CollabEditor: React.FC = () => {
                 <button
                     className={editor.isActive('bold') ? 'active' : ''}
                     onClick={() => editor.chain().focus().toggleBold().run()}
+                    style={{ fontWeight: 'bold' }}
                 >
                     B
                 </button>
@@ -82,6 +83,7 @@ const CollabEditor: React.FC = () => {
                 <button
                     className={editor.isActive('italic') ? 'active' : ''}
                     onClick={() => editor.chain().focus().toggleItalic().run()}
+                    style={{ fontStyle: 'italic' }}
                 >
                     I
                 </button>
@@ -89,6 +91,7 @@ const CollabEditor: React.FC = () => {
                 <button
                     className={editor.isActive('strike') ? 'active' : ''}
                     onClick={() => editor.chain().focus().toggleStrike().run()}
+                    style={{ textDecoration: 'line-through' }}
                 >
                     S
                 </button>

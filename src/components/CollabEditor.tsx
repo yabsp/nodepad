@@ -7,6 +7,7 @@ import { ydoc, provider } from '../y.js/y-webrtc-test'
 
 
 const CollabEditor: React.FC = () => {
+    const [, setVersion] = React.useState(0)
     /**
      * Initialize the Tiptap editor instance.
      * - StarterKit: basic rich-text nodes & marks (paragraph, bold, …)
@@ -47,6 +48,20 @@ const CollabEditor: React.FC = () => {
             }),
         ],
     })
+
+    React.useEffect(() => {
+        if (!editor) return
+
+        const update = () => setVersion(v => v + 1)
+
+        editor.on('selectionUpdate', update)
+        editor.on('transaction', update)
+
+        return () => {
+            editor.off('selectionUpdate', update)
+            editor.off('transaction', update)
+        }
+    }, [editor])
 
     if (!editor) {
         return null

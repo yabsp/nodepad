@@ -4,6 +4,10 @@ import StarterKit from '@tiptap/starter-kit'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCaret from '@tiptap/extension-collaboration-caret'
 import { ydoc, provider } from '../y.js/y-webrtc-test'
+import Underline from '@tiptap/extension-underline'
+import Highlight from '@tiptap/extension-highlight'
+
+
 
 
 const CollabEditor: React.FC = () => {
@@ -21,6 +25,8 @@ const CollabEditor: React.FC = () => {
                 // Disable default undo/redo because collaboration
                 // provides its own synchronized version.
             }),
+            Underline,
+            Highlight,
             // Enables collaborative content syncing using Yjs
             Collaboration.configure({
                 document: ydoc,
@@ -89,13 +95,38 @@ const CollabEditor: React.FC = () => {
                 </button>
 
                 <button
+                    className={editor.isActive('underline') ? 'active' : ''}
+                    onClick={() => editor.chain().focus().toggleUnderline().run()}
+                    style={{ textDecoration: 'underline' }}
+                >
+                    U
+                </button>
+
+                <button
                     className={editor.isActive('strike') ? 'active' : ''}
                     onClick={() => editor.chain().focus().toggleStrike().run()}
                     style={{ textDecoration: 'line-through' }}
                 >
                     S
                 </button>
+
+                <button
+                    className={editor.isActive('highlight') ? 'active' : ''}
+                    onClick={() => editor.chain().focus().toggleHighlight().run()}
+                    style={{ backgroundColor: 'yellow' }}
+                >
+                    H
+                </button>
+
+                <button onClick={() => editor.chain().focus().undo().run()}>
+                    ⟲
+                </button>
+
+                <button onClick={() => editor.chain().focus().redo().run()}>
+                    ⟳
+                </button>
             </div>
+
 
             {/* The editor */}
             <EditorContent editor={editor} />

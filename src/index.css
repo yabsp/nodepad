@@ -67,6 +67,7 @@ button:focus-visible {
   }
 }
 
+/* Text Field */
 .ProseMirror {
     border-radius: 6px;
     padding: 0.75rem;
@@ -92,3 +93,4 @@ button:focus-visible {
         color: #ffffff;
     }
 }
+

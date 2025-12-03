@@ -54,6 +54,32 @@ const CollabEditor: React.FC = () => {
     return (
         <div style={{ padding: '1rem', maxWidth: 800, margin: '0 auto' }}>
             <h1>Nodepad – Collaborative Text Editor</h1>
+
+            {/* Toolbar */}
+            <div style={{ marginBottom: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+                <button
+                    className={editor.isActive('bold') ? 'active' : ''}
+                    onClick={() => editor.chain().focus().toggleBold().run()}
+                >
+                    B
+                </button>
+
+                <button
+                    className={editor.isActive('italic') ? 'active' : ''}
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                >
+                    I
+                </button>
+
+                <button
+                    className={editor.isActive('strike') ? 'active' : ''}
+                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                >
+                    S
+                </button>
+            </div>
+
+            {/* The editor */}
             <EditorContent editor={editor} />
         </div>
     )

@@ -1,0 +1,138 @@
+import React from "react"
+
+/**
+ * UI_TOKENS
+ * Set the style for the whole webapp
+ */
+export const UI_TOKENS = {
+    colors: {
+        border: "#AAAAAA",
+        textOnLight: "#111111",
+        textOnDark: "#FFFFFF",
+        mutedText: "rgba(0, 0, 0, 0.7)",
+        bg: "#1A1A1A",
+        buttonBg: "#2B2B2B",
+        buttonActiveBg: "#666666",
+    },
+    radii: {
+        sm: 8,
+    },
+    spacing: {
+        xs: 6,
+        sm: 8,
+        md: 12,
+        lg: 16,
+    },
+    sizes: {
+        sidebarWidth: 240,
+        editorMaxWidth: 900,
+        borderWidth: 1.5,
+    },
+} as const
+
+/**
+ * Shared app-level styles to avoid duplication across components.
+ */
+export const uiStyles = {
+    appShell: {
+        display: "flex",
+        width: "100vw",
+        height: "100vh",
+        background: UI_TOKENS.colors.bg,
+        color: UI_TOKENS.colors.textOnDark,
+    } as const,
+
+    sidebar: {
+        width: UI_TOKENS.sizes.sidebarWidth,
+        borderRight: `${UI_TOKENS.sizes.borderWidth}px solid ${UI_TOKENS.colors.border}`,
+        padding: UI_TOKENS.spacing.md,
+    } as const,
+
+    sidebarHeader: {
+        marginBottom: UI_TOKENS.spacing.md,
+    } as const,
+
+    mutedLabel: {
+        fontSize: 12,
+        opacity: 0.7,
+    } as const,
+
+    strongText: {
+        fontWeight: 600,
+    } as const,
+
+    fileList: {
+        display: "flex",
+        flexDirection: "column",
+        gap: UI_TOKENS.spacing.xs,
+    } as const,
+
+    editorPanel: {
+        flex: 1,
+        padding: UI_TOKENS.spacing.lg,
+    } as const,
+
+    editorContainer: {
+        maxWidth: UI_TOKENS.sizes.editorMaxWidth,
+        height: "100%",
+    } as const,
+
+    toolbarRow: {
+        display: "flex",
+        gap: UI_TOKENS.spacing.sm,
+        marginBottom: UI_TOKENS.spacing.md,
+    } as const,
+} as const
+
+/**
+ * Builds a consistent button style.
+ *
+ * @param options - Button appearance options
+ * @param options.active - Whether the button is in an "active/toggled" state
+ * @param options.fullWidth - Whether the button should stretch to 100% width
+ * @returns Inline style object suitable for <button style={...} />
+ */
+export function buttonStyle(options?: { active?: boolean; fullWidth?: boolean }): React.CSSProperties {
+    const active = Boolean(options?.active)
+    const fullWidth = Boolean(options?.fullWidth)
+
+    return {
+        width: fullWidth ? "100%" : undefined,
+        padding: "6px 10px",
+        borderRadius: UI_TOKENS.radii.sm,
+        border: `1px solid ${UI_TOKENS.colors.border}`,
+        background: active ? UI_TOKENS.colors.buttonActiveBg : UI_TOKENS.colors.buttonBg,
+        cursor: "pointer",
+    }
+}
+
+/**
+ * Style for file list item buttons in the sidebar.
+ *
+ * @param active - Whether the file is currently selected
+ * @returns Inline style object for the sidebar file item button
+ */
+export function sidebarFileButtonStyle(active: boolean): React.CSSProperties {
+    return {
+        textAlign: "left",
+        padding: "8px 10px",
+        borderRadius: UI_TOKENS.radii.sm,
+        background: active ? UI_TOKENS.colors.buttonActiveBg : UI_TOKENS.colors.buttonBg,
+        cursor: "pointer",
+        border: `1px solid ${UI_TOKENS.colors.border}`,
+        color: UI_TOKENS.colors.textOnDark,
+    }
+}
+
+/**
+ * Consistent divider style (<hr>).
+ *
+ * @returns Inline style object for <hr style={...} />
+ */
+export function dividerStyle(): React.CSSProperties {
+    return {
+        border: "none",
+        borderTop: `1px solid ${UI_TOKENS.colors.border}`,
+        margin: `${UI_TOKENS.spacing.md}px 0`,
+    }
+}

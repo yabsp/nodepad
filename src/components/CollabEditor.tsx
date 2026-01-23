@@ -1,136 +1,124 @@
-import React from 'react'
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Collaboration from '@tiptap/extension-collaboration'
-import CollaborationCaret from '@tiptap/extension-collaboration-caret'
-import { ydoc, provider } from '../y.js/y-webrtc-test'
-import Underline from '@tiptap/extension-underline'
-import Highlight from '@tiptap/extension-highlight'
+import React from "react"
+import * as Y from "yjs"
+import { useEditor } from "@tiptap/react"
+import Collaboration from "@tiptap/extension-collaboration"
+import CollaborationCaret from "@tiptap/extension-collaboration-caret"
+import Underline from "@tiptap/extension-underline"
+import Highlight from "@tiptap/extension-highlight"
+import Document from "@tiptap/extension-document"
+import Paragraph from "@tiptap/extension-paragraph"
+import Text from "@tiptap/extension-text"
+import Bold from "@tiptap/extension-bold"
+import Italic from "@tiptap/extension-italic"
+import { useCollabRoom, DEFAULT_FILE } from "../y.js/collabRoom"
+import type { FileInfo } from "../y.js/collabRoom"
+import { Sidebar } from "./Sidebar"
+import { EditorPanel } from "./EditorPanel.tsx"
+import { uiStyles } from "./uiStyles.ts"
 
+type FileMeta = { id: string } & FileInfo
 
-
-
-const CollabEditor: React.FC = () => {
-    const [, setVersion] = React.useState(0)
-    /**
-     * Initialize the Tiptap editor instance.
-     * - StarterKit: basic rich-text nodes & marks (paragraph, bold, …)
-     * - Collaboration: binds the editor to the shared Y.Doc
-     * - CollaborationCaret: shows remote user cursors
-     */
-    const editor = useEditor({
-        extensions: [
-            StarterKit.configure({
-                undoRedo: false,
-                // Disable default undo/redo because collaboration
-                // provides its own synchronized version.
-            }),
-            Underline,
-            Highlight,
-            // Enables collaborative content syncing using Yjs
-            Collaboration.configure({
-                document: ydoc,
-                field: 'default',
-            }),
-            // Shows cursors inside the editor
-            CollaborationCaret.configure({
-                provider,
-                user: {
-                    name: 'User',
-                    color: '#4c6fff',
-                },
-                // Custom render function for cursors
-                render: user => {
-                    const cursor = document.createElement('span')
-                    cursor.classList.add('collaboration-cursor__caret')
-                    cursor.style.borderLeft = `2px solid ${user.color || '#4c6fff'}`
-                    cursor.style.marginLeft = '-1px'
-                    cursor.style.marginRight = '-1px'
-                    cursor.style.position = 'relative'
-                    cursor.style.pointerEvents = 'none'
-                    cursor.style.height = '1em'
-                    return cursor
-                },
-            }),
-        ],
-    })
+/**
+ * Observe a Y.Map and re-render whenever the map changes, then return a snapshot of its entries for rendering.
+ * @param yMap {Y.Map<T> | null} - Yjs map to observe
+ * @returns Array of entries in the map (key/value) for rendering
+ */
+function useYMapSnapshot<T>(yMap: Y.Map<T> | null): Array<{ key: string; value: T }> {
+    // Force the component to refresh
+    const [, force] = React.useReducer((x) => x + 1, 0)
 
     React.useEffect(() => {
-        if (!editor) return
+        if (!yMap) return
+        // Any Y.Map change (set/delete/update) triggers a refresh
+        const onChange = () => force()
+        yMap.observe(onChange)
+        // Cleanup
+        return () => yMap.unobserve(onChange)
+    }, [yMap])
 
-        const update = () => setVersion(v => v + 1)
+    if (!yMap) return []
+    // Convert Y.Map into an array for rendering
+    const out: Array<{ key: string; value: T }> = []
+    yMap.forEach((value, key) => out.push({ key, value }))
+    return out
+}
 
-        editor.on('selectionUpdate', update)
-        editor.on('transaction', update)
+/**
+ * Own collaboration lifecycle which:
+ * - derives file list from shared Y.Map
+ * - tracks active file
+ * - constructs Tiptap editor extensions and editor instance
+ * - delegates UI rendering to Sidebar + EditorPanel
+ * @returns JSX element for the collaborative editor experience
+ */
+export default function CollabEditor() {
+    // TODO Add a way to create a session in the gui
+    // All peers connected to the same roomName (identifies the collaboration session) end up in the same room
+    const [roomName] = React.useState("Test-Room-01")
+    // Use custom hook for lifecycle of the room
+    const room = useCollabRoom(roomName)
 
-        return () => {
-            editor.off('selectionUpdate', update)
-            editor.off('transaction', update)
-        }
-    }, [editor])
+    // Observe the shared files in the Yjs Doc
+    const fileEntries = useYMapSnapshot(room?.files ?? null)
+    const files: FileMeta[] = React.useMemo(
+        () =>
+            fileEntries
+                .map(({ key, value }) => ({ id: key, ...value }))
+                .sort((a, b) => a.createdAt - b.createdAt),
+        [fileEntries]
+    )
 
-    if (!editor) {
-        return null
-    }
+    // Track which file is open and open default
+    const [activeFileId, setActiveFileId] = React.useState<string>(DEFAULT_FILE)
+
+    // If activeFileId is not available use the default
+    React.useEffect(() => {
+        if (!room) return
+        if (!room.files.has(activeFileId)) setActiveFileId(DEFAULT_FILE)
+    }, [room, activeFileId])
+
+    /** Create new collaborative file, add metadata and add to the file list of the room */
+    const addFile = React.useCallback(() => {
+        if (!room) return
+        const id = crypto.randomUUID()
+        room.files.set(id, { name: "New File", icon: "📄", createdAt: Date.now() })
+        setActiveFileId(id)
+    }, [room])
+
+    /** Build TipTap extension list */
+    const extensions = React.useMemo(() => {
+        // Base schema + marks. Always present to avoid schema errors.
+        const base = [Document, Paragraph, Text, Bold, Italic, Underline, Highlight]
+        if (!room) return base
+
+        return [
+            ...base,
+            Collaboration.configure({ document: room.yDoc, field: activeFileId }),
+            CollaborationCaret.configure({
+                provider: room.provider,
+                user: { name: "User", color: "#4c6fff" },
+            }),
+        ]
+    }, [room, activeFileId])
+
+    // Create the editor instance
+    const editor = useEditor({ extensions }, [extensions])
+
+    // Display loading screens to prevent crashes during loading
+    if (!room) return <div>Connecting…</div>
+    if (!editor) return <div>Loading editor…</div>
+
     return (
-        <div style={{ padding: '1rem', maxWidth: 800, margin: '0 auto' }}>
-            <h1>Nodepad</h1>
+        <div id="app-shell" style={uiStyles.appShell}>
+            <Sidebar
+                roomName={roomName}
+                files={files.map((f) => ({ id: f.id, name: f.name }))}
+                activeFileId={activeFileId}
+                onAddFile={addFile}
+                onSelectFile={setActiveFileId}
+            />
 
-            {/* Toolbar */}
-            <div style={{ marginBottom: '0.5rem', display: 'flex', gap: '0.5rem' }}>
-                <button
-                    className={editor.isActive('bold') ? 'active' : ''}
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                    style={{ fontWeight: 'bold' }}
-                >
-                    B
-                </button>
-
-                <button
-                    className={editor.isActive('italic') ? 'active' : ''}
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                    style={{ fontStyle: 'italic' }}
-                >
-                    I
-                </button>
-
-                <button
-                    className={editor.isActive('underline') ? 'active' : ''}
-                    onClick={() => editor.chain().focus().toggleUnderline().run()}
-                    style={{ textDecoration: 'underline' }}
-                >
-                    U
-                </button>
-
-                <button
-                    className={editor.isActive('strike') ? 'active' : ''}
-                    onClick={() => editor.chain().focus().toggleStrike().run()}
-                    style={{ textDecoration: 'line-through' }}
-                >
-                    S
-                </button>
-
-                <button
-                    className={editor.isActive('highlight') ? 'active' : ''}
-                    onClick={() => editor.chain().focus().toggleHighlight().run()}
-                >
-                    H
-                </button>
-
-                <button onClick={() => editor.chain().focus().undo().run()}>
-                    ⟲
-                </button>
-
-                <button onClick={() => editor.chain().focus().redo().run()}>
-                    ⟳
-                </button>
-            </div>
-
-
-            {/* The editor */}
-            <EditorContent editor={editor} />
+            <EditorPanel editor={editor} />
         </div>
     )
 }
-
-export default CollabEditor

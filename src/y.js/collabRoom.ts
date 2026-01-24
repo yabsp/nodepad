@@ -2,7 +2,7 @@ import * as Y from "yjs"
 import {WebrtcProvider} from "y-webrtc"
 import React from "react"
 import { IndexeddbPersistence } from "y-indexeddb"
-
+import { WebsocketProvider } from "y-websocket"
 /**
  * Collaborative file metadata stored in the shared Y.Doc.
  */
@@ -15,6 +15,7 @@ export type CollabRoom = {
     roomName: string
     yDoc: Y.Doc
     provider: WebrtcProvider
+    websocketProvider: WebsocketProvider
     persistence: IndexeddbPersistence
     files: Y.Map<FileInfo>
 }
@@ -45,6 +46,13 @@ export function useCollabRoom(roomName: string) {
         // Connect peers who share the same roomName and synchronize the Y.Doc updates over WebRTC
         const provider = new WebrtcProvider(roomName, yDoc, {signaling: SIGNALING})
 
+
+        const websocketProvider = new WebsocketProvider(
+            domain + "/yjs",
+            roomName,
+            yDoc
+        )
+
         // indexeddb persistence
         const persistence = new IndexeddbPersistence(roomName, yDoc)
 
@@ -58,13 +66,14 @@ export function useCollabRoom(roomName: string) {
             }
 
             // Publish the room primitives to consumers now that data is loaded
-            setRoom({roomName, yDoc, provider, persistence, files})
+            setRoom({roomName, yDoc, provider, websocketProvider, persistence, files})
         })
 
         // Cleanup
         return () => {
             provider.destroy()
             persistence.destroy()
+            websocketProvider.destroy()
             yDoc.destroy()
         }
     }, [roomName])

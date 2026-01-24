@@ -3,6 +3,7 @@
 import { WebSocketServer } from 'ws'
 import http from 'http'
 import * as map from 'lib0/map'
+import { setupWSConnection } from './utils.js'
 
 const wsReadyStateConnecting = 0
 const wsReadyStateOpen = 1
@@ -81,7 +82,12 @@ const onconnection = conn => {
   })
   conn.on('message', /** @param {object} message */ message => {
     if (typeof message === 'string' || message instanceof Buffer) {
-      message = JSON.parse(message)
+      try {
+        message = JSON.parse(message)
+      } catch (e) {
+        console.warn(e)
+        return
+      }
     }
     if (message && message.type && !closed) {
       switch (message.type) {
@@ -129,7 +135,11 @@ server.on('upgrade', (request, socket, head) => {
    * @param {any} ws
    */
   const handleAuth = ws => {
-    wss.emit('connection', ws, request)
+    if (request.url.startsWith('/yjs')) {
+      setupWSConnection(ws, request)
+    } else {
+      wss.emit('connection', ws, request)
+    }
   }
   wss.handleUpgrade(request, socket, head, handleAuth)
 })

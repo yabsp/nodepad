@@ -3,7 +3,7 @@
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tiptap](https://img.shields.io/badge/tiptap-000000?style=for-the-badge&logo=tiptap&logoColor=white)
-![Y.js](https://img.shields.io/badge/y.js-orange?style=for-the-badge&logo=y.js&logoColor=white)git
+![Y.js](https://img.shields.io/badge/y.js-orange?style=for-the-badge&logo=y.js&logoColor=white)
 # Nodepad
 
 Nodepad is a collaborative text editor built on a peer-to-peer architecture using Y.js and WebRTC. Multiple users can edit a shared document in real time directly from their browsers.

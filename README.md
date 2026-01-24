@@ -1,3 +1,9 @@
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Tiptap](https://img.shields.io/badge/tiptap-000000?style=for-the-badge&logo=tiptap&logoColor=white)
+![Y.js](https://img.shields.io/badge/y.js-orange?style=for-the-badge&logo=y.js&logoColor=white)git
 # Nodepad
 
 Nodepad is a collaborative text editor built on a peer-to-peer architecture using Y.js and WebRTC. Multiple users can edit a shared document in real time directly from their browsers.
@@ -8,6 +14,7 @@ Nodepad is a collaborative text editor built on a peer-to-peer architecture usin
 
 - [Y.js](https://github.com/yjs/yjs) – CRDT-based shared document model
 - [y-webrtc](https://github.com/yjs/y-webrtc) – WebRTC-based peer-to-peer provider for y.js
+- [y-indexeddb](https://github.com/yjs/y-indexeddb) - Database adapter to store data persistently, see [the quick guide regarding persistency](/docs/persistency.md).
 - [Tiptap](https://tiptap.dev/) – Headless, framework-agnostic rich-text editor built on ProseMirror
 - [React](https://react.dev/) – Component-based UI library
 - [Vite](https://vitejs.dev/) – Fast development bundler and dev server

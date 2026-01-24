@@ -63,12 +63,12 @@ You will have to create a .env file in the project root. Add the following line 
 ```.env
 VITE_SIGNALING_SERVER_DOMAIN=wss://<domain>
 ```
-If you for example use a signaling server on your current device on port 4444 - which is the default when using ```npm run server``` - you add:
+If you for example use a signaling server on your current device on port 4444 - which is default when using ```npm run server``` - you add:
 
 ```.env
 VITE_SIGNALING_SERVER_DOMAIN=ws://localhost:4444
 ```
-Since we use Vite the domain is finally loaded from the .env file in [collabRoom.ts](/src/y.js/collabRoom.ts) using ```const domain = import.meta.env.VITE_SIGNALING_SERVER_DOMAIN;```
+Since we use Vite, the domain is finally loaded from the .env file in [collabRoom.ts](/src/y.js/collabRoom.ts) using ```const domain = import.meta.env.VITE_SIGNALING_SERVER_DOMAIN;```
 
 
 ### 3. Start Clients

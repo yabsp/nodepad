@@ -1,6 +1,7 @@
 import * as Y from "yjs"
 import {WebrtcProvider} from "y-webrtc"
 import React from "react"
+import { IndexeddbPersistence } from "y-indexeddb"
 
 /**
  * Collaborative file metadata stored in the shared Y.Doc.
@@ -14,6 +15,7 @@ export type CollabRoom = {
     roomName: string
     yDoc: Y.Doc
     provider: WebrtcProvider
+    persistence: IndexeddbPersistence
     files: Y.Map<FileInfo>
 }
 
@@ -42,20 +44,27 @@ export function useCollabRoom(roomName: string) {
         const yDoc = new Y.Doc()
         // Connect peers who share the same roomName and synchronize the Y.Doc updates over WebRTC
         const provider = new WebrtcProvider(roomName, yDoc, {signaling: SIGNALING})
+
+        // indexeddb persistence
+        const persistence = new IndexeddbPersistence(roomName, yDoc)
+
         // Get the file list from the shared yDoc
         const files = yDoc.getMap<FileInfo>("files")
 
-        // Ensure there is always at least one file immediately
-        if (!files.has(DEFAULT_FILE_ID)) {
-            files.set(DEFAULT_FILE_ID, {name: "Untitled", createdAt: Date.now()})
-        }
+        persistence.on('synced', () => {
+            // Only create default file if database is truly empty
+            if (!files.has(DEFAULT_FILE_ID)) {
+                files.set(DEFAULT_FILE_ID, {name: "Untitled", createdAt: Date.now()})
+            }
 
-        // Publish the room primitives to consumers
-        setRoom({roomName, yDoc, provider, files})
+            // Publish the room primitives to consumers now that data is loaded
+            setRoom({roomName, yDoc, provider, persistence, files})
+        })
 
         // Cleanup
         return () => {
             provider.destroy()
+            persistence.destroy()
             yDoc.destroy()
         }
     }, [roomName])

@@ -54,7 +54,7 @@ function useYMapSnapshot<T>(yMap: Y.Map<T> | null): Array<{ key: string; value: 
 export default function CollabEditor() {
     // TODO Add a way to create a session in the gui
     // All peers connected to the same roomName (identifies the collaboration session) end up in the same room
-    const [roomName] = React.useState("Test-Room-01")
+    const [roomName] = React.useState("Test-Room-02")
     // Use custom hook for lifecycle of the room
     const room = useCollabRoom(roomName)
 

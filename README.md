@@ -34,21 +34,21 @@ Because we could not reliably use the public Y.js signaling servers for this pro
 ## Functionalities
 - Single shared document
 - Real-time collaborative editing via Y.js and WebRTC
-- Peer-to-peer synchronisation (no central document server, using signaling server)
+- Peer-to-peer synchronization (no central document server, using signaling server)
 
 ---
 
 ## Getting Started
 
 ### 1. Install Dependencies
-This installes all of the dependencies for nodepad.
+This installs all dependencies needed.
 
 ```bash
 npm install
 # or
 yarn install
 ```
-### 2. Start signaling server
+### 2. Start a signaling server
 
 This starts the WebSocket-based signaling server that y-webrtc uses to establish connections between peers.
 
@@ -58,16 +58,21 @@ npm run server
 yarn server
 ```
 
+#### 2.1 Signaling server domain
+You will have to create a .env file in the project root. Add the following line to the .env file:
+```.env
+VITE_SIGNALING_SERVER_DOMAIN=wss://<domain>
+```
+If you for example use a signaling server on your current device on port 4444 - which is the default when using ```npm run server``` - you add:
+
+```.env
+VITE_SIGNALING_SERVER_DOMAIN=ws://localhost:4444
+```
+Since we use Vite the domain is finally loaded from the .env file in [collabRoom.ts](/src/y.js/collabRoom.ts) using ```const domain = import.meta.env.VITE_SIGNALING_SERVER_DOMAIN;```
+
+
 ### 3. Start Clients
-
-If the client is on a different machine you will need to change localhost to the ip-address of the signaling server in ```src/y-webrtc-test.ts```:
-
- ```js
- // [LINE 8] 
- const provider = new WebrtcProvider('your-room-name', ydoc, { signaling: ['ws://localhost:4444'] }) // TODO Change localhost to ip-address of signaling server
- ```
-
-This starts a preview of the website and connects to one document via the signaling server. 
+The following code starts a preview of the website and connects to one document via the signaling server. 
 
 ```bash
 npm run dev
@@ -101,7 +106,7 @@ Some modern browsers like Zen Browser (Firefox Fork) seem to have trouble connec
 
 ## Contributing
 
-Contributions are not allowed since this is a graded project for the seminar "New Trends for Local and Global Interconnects for P2P Applications" of Christian Tschudin at University of Basel.
+Contributions are not allowed since this is a graded project for the seminar "New Trends for Local and Global Interconnects for P2P Applications" by Christian Tschudin at University of Basel.
 
 ---
 

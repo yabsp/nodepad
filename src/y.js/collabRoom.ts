@@ -20,7 +20,8 @@ export type CollabRoom = {
 /**
  * A Signaling server is used to exchange WebRTC offers/answers/candidates, the data flows peer-to-peer once connected.
  */
-const SIGNALING = ["wss://ipa.spichty.stream"]
+const domain = import.meta.env.VITE_SIGNALING_SERVER_DOMAIN;
+const SIGNALING = [domain]
 /**
  * Prevent deadlock in empty rooms and races where multiple peers create different first file
  */

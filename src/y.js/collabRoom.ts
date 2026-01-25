@@ -3,6 +3,7 @@ import {WebrtcProvider} from "y-webrtc"
 import React from "react"
 import { IndexeddbPersistence } from "y-indexeddb"
 import { WebsocketProvider } from "y-websocket"
+import { SIGNALING, domain } from "../config/signaling"
 /**
  * Collaborative file metadata stored in the shared Y.Doc.
  */
@@ -20,11 +21,6 @@ export type CollabRoom = {
     files: Y.Map<FileInfo>
 }
 
-/**
- * A Signaling server is used to exchange WebRTC offers/answers/candidates, the data flows peer-to-peer once connected.
- */
-const domain = import.meta.env.VITE_SIGNALING_SERVER_DOMAIN;
-const SIGNALING = [domain]
 /**
  * Prevent deadlock in empty rooms and races where multiple peers create different first file
  */

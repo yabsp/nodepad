@@ -1,4 +1,5 @@
-import {buttonStyle, dividerStyle, sidebarFileButtonStyle, uiStyles} from "./uiStyles.ts"
+import React from "react"
+import { buttonStyle, dividerStyle, sidebarFileButtonStyle, uiStyles } from "./uiStyles.ts"
 
 /** Hold id as a key and a human-readable file name */
 export type SidebarFile = {
@@ -15,6 +16,8 @@ export type SidebarProps = {
     activeFileId: string
     onAddFile: () => void
     onSelectFile: (fileId: string) => void
+    onRenameFile: (fileId: string, newName: string) => void
+    onDeleteFile: (fileId: string) => void
     onLeave: () => void
     users: string[]
 }
@@ -35,25 +38,27 @@ export function Sidebar({
                             activeFileId,
                             onAddFile,
                             onSelectFile,
+                            onRenameFile,
+                            onDeleteFile,
                             onLeave,
                             users,
                         }: SidebarProps) {
+    const [editingId, setEditingId] = React.useState<string | null>(null)
+    const [draftName, setDraftName] = React.useState("")
+
     return (
         <aside id="sidebar" style={uiStyles.sidebar}>
             <div id="sidebar-header" style={uiStyles.sidebarHeader}>
                 <div id="room-label" style={uiStyles.mutedLabel}>
-                    Connected room
+                    Connected Room
                 </div>
                 <div id="room-name" style={uiStyles.strongText}>
                     {roomName}
                 </div>
             </div>
 
-            {/* Back / Home button */}
-            <button
-                style={buttonStyle({ fullWidth: true })}
-                onClick={onLeave}
-            >
+            {/* Leave room */}
+            <button style={buttonStyle({ fullWidth: true })} onClick={onLeave}>
                 ← Leave Room
             </button>
 
@@ -69,26 +74,86 @@ export function Sidebar({
                 </ul>
             </div>
 
-            <hr id="sidebar-divider" style={dividerStyle()} />
+            <hr style={dividerStyle()} />
 
-            <button id="create-file-button" onClick={onAddFile} style={buttonStyle({ fullWidth: true })}>
+            {/* Create file */}
+            <button
+                id="create-file-button"
+                onClick={onAddFile}
+                style={buttonStyle({ fullWidth: true })}
+            >
                 Create New File
             </button>
 
+            {/* File list */}
             <div id="file-list" style={uiStyles.fileList}>
                 {files.map((f) => {
                     const isActive = f.id === activeFileId
+
                     return (
-                        <button
+                        <div
                             key={f.id}
-                            data-file-id={f.id}
-                            data-active={isActive ? "true" : "false"}
-                            onClick={() => onSelectFile(f.id)}
-                            style={sidebarFileButtonStyle(isActive)}
-                            title={f.name}
+                            style={{
+                                display: "flex",
+                                gap: 6,
+                                alignItems: "center",
+                            }}
                         >
-                            {f.name}
-                        </button>
+                            {/* Rename input OR button */}
+                            {editingId === f.id ? (
+                                <input
+                                    autoFocus
+                                    value={draftName}
+                                    onChange={(e) => setDraftName(e.target.value)}
+                                    onBlur={() => {
+                                        onRenameFile(f.id, draftName.trim() || f.name)
+                                        setEditingId(null)
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            onRenameFile(f.id, draftName.trim() || f.name)
+                                            setEditingId(null)
+                                        }
+                                        if (e.key === "Escape") {
+                                            setEditingId(null)
+                                        }
+                                    }}
+                                    style={{
+                                        flex: 1,
+                                        padding: "6px 8px",
+                                        borderRadius: 6,
+                                    }}
+                                />
+                            ) : (
+                                <button
+                                    style={{
+                                        ...sidebarFileButtonStyle(isActive),
+                                        flex: 1,
+                                    }}
+                                    onClick={() => onSelectFile(f.id)}
+                                    onDoubleClick={() => {
+                                        setEditingId(f.id)
+                                        setDraftName(f.name)
+                                    }}
+                                >
+                                    {f.name}
+                                </button>
+                            )}
+
+                            {/* Delete */}
+                            <button
+                                title="Delete file"
+                                onClick={() => onDeleteFile(f.id)}
+                                style={{
+                                    background: "transparent",
+                                    border: "none",
+                                    color: "#aaa",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                ✕
+                            </button>
+                        </div>
                     )
                 })}
             </div>

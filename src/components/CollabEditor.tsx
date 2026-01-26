@@ -181,6 +181,17 @@ export default function CollabEditor({
                 activeFileId={activeFileId}
                 onAddFile={addFile}
                 onSelectFile={setActiveFileId}
+                onRenameFile={(id, name) => {
+                    const file = room?.files.get(id)
+                    if (!file) return
+                    room.files.set(id, { ...file, name })
+                }}
+                onDeleteFile={(id) => {
+                    room?.files.delete(id)
+                    if (activeFileId === id) {
+                        setActiveFileId(DEFAULT_FILE)
+                    }
+                }}
                 onLeave={onLeave}
                 users={users}
             />

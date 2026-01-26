@@ -6,7 +6,7 @@
 [![Y.js](https://img.shields.io/badge/y.js-orange?style=for-the-badge&logo=y.js&logoColor=white)](https://yjs.dev/)
 # Nodepad
 
-Nodepad is a collaborative text editor built on a peer-to-peer architecture using Y.js and WebRTC. Multiple users can edit a shared document in real time directly from their browsers.
+Nodepad is a collaborative text editor built on a Hybrid Peer-to-Peer architecture using Y.js. It leverages both WebRTC and WebSockets to ensure real-time synchronization is fast, efficient, and reliable across any network.
 
 ---
 
@@ -14,7 +14,8 @@ Nodepad is a collaborative text editor built on a peer-to-peer architecture usin
 
 - [Y.js](https://github.com/yjs/yjs) – CRDT-based shared document model
 - [y-webrtc](https://github.com/yjs/y-webrtc) – WebRTC-based peer-to-peer provider for y.js
-- [y-indexeddb](https://github.com/yjs/y-indexeddb) - Database adapter to store data persistently, see [the quick guide regarding persistency](/docs/persistency.md).
+- [y-indexeddb](https://github.com/yjs/y-indexeddb) - Database adapter for offline persistence (see the [persistence guide](/docs/persistency.md))
+- [y-websocket](https://github.com/yjs/y-websocket) - WebSocket provider for server-relayed syncing and persistence.
 - [Tiptap](https://tiptap.dev/) – Headless, framework-agnostic rich-text editor built on ProseMirror
 - [React](https://react.dev/) – Component-based UI library
 - [Vite](https://vitejs.dev/) – Fast development bundler and dev server
@@ -32,16 +33,21 @@ Nodepad is a collaborative text editor built on a peer-to-peer architecture usin
 
 ## Architecture
 
-Nodepad uses Y.js for conflict-free collaborative editing. Synchronisation between peers happens via WebRTC data channels provided by y.webrtc. A signaling server is required only to help peers discover each other and establish the WebRTC connections – it does not store or manage document content.
+Nodepad uses Y.js for conflict-free collaborative editing. To maximize reliability, the application employs a Hybrid Sync Strategy:
 
-Because we could not reliably use the public Y.js signaling servers for this project, you are required to run your own signaling server locally.
+  1. Peer-to-Peer (Primary): Clients attempt to connect directly via y-webrtc. This offloads traffic from the server and offers low-latency syncing on local networks.
+
+  2. Client-Server (Fallback & Persistence): All clients also connect to a central Node.js server via y-websocket. This ensures that users behind restrictive firewalls (Symmetric NAT) can still collaborate and serves as the central storage for document history.
+
+The server acts as both a Signaling Server (introducing peers for WebRTC) and a Sync Server (relaying data when P2P fails).
 
 ---
 
 ## Functionalities
-- Single shared document
-- Real-time collaborative editing via Y.js and WebRTC
-- Peer-to-peer synchronization (no central document server, using signaling server)
+- Hybrid Synchronization: Seamlessly merges updates from P2P and WebSocket sources.
+- Resilient Connectivity: Works even if P2P connections are blocked by corporate/university firewalls.
+- Real-time Collaboration: Multiple users can edit the same document simultaneously.
+- Offline Support: Changes are saved locally using IndexedDB and synced when the connection is restored.
 
 ---
 
@@ -55,9 +61,9 @@ npm install
 # or
 yarn install
 ```
-### 2. Start a signaling server
+### 2. Start the Server
 
-This starts the WebSocket-based signaling server that y-webrtc uses to establish connections between peers.
+Start the hybrid signaling and sync server.
 
 ```bash
 npm run server
@@ -65,8 +71,11 @@ npm run server
 yarn server
 ```
 
-#### 2.1 Signaling server domain
-You will have to create a .env file in the project root. Add the following line to the .env file:
+*By default, the server runs on port 4444.*
+
+#### 2.1 Server Configuration
+Create a ```.env``` file in the project root to configure the connection domain.
+
 ```.env
 VITE_SIGNALING_SERVER_DOMAIN=wss://<domain>
 ```
@@ -78,8 +87,8 @@ VITE_SIGNALING_SERVER_DOMAIN=ws://localhost:4444
 Since we use Vite, the domain is finally loaded from the .env file in [collabRoom.ts](/src/y.js/collabRoom.ts) using ```const domain = import.meta.env.VITE_SIGNALING_SERVER_DOMAIN;```
 
 
-### 3. Start Clients
-The following code starts a preview of the website and connects to one document via the signaling server. 
+### 3. Start the Client
+Start the frontend development server.
 
 ```bash
 npm run dev
@@ -99,21 +108,19 @@ Some modern browsers like Zen Browser (Firefox Fork) seem to have trouble connec
 
 ## Roadmap
 
-- Visible shared cursors
-- Editor Toolbar 
-  - Bold
-  - Italic
-  - Underlined
-  - Superscript
-  - Subscript
-- UI built with Tiptap
-- Client awareness list
+- [X] Visible shared cursors
+
+- [ ] Editor Toolbar (Bold, Italic, Underline)
+
+- [ ] Improved UI with Tiptap
+
+- [ ] Client awareness list (Who is online)
 
 ---
 
 ## Contributing
 
-Contributions are not allowed since this is a graded project for the seminar "New Trends for Local and Global Interconnects for P2P Applications" by Christian Tschudin at University of Basel.
+Contributions are not allowed since this is a graded project for the seminar "New Trends for Local and Global Interconnects for P2P Applications" by Professor Christian Tschudin at University of Basel.
 
 ---
 

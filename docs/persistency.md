@@ -44,7 +44,7 @@ As a developer, you often need to wipe the database to test "fresh" user scenari
 
 ---
 
-##Programmatic Control
+## Programmatic Control
 
 You can also manage the database via code, which is useful for "Reset Document" buttons in your UI.
 

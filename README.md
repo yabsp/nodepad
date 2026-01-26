@@ -15,6 +15,7 @@ Nodepad is a collaborative text editor built on a peer-to-peer architecture usin
 - [Y.js](https://github.com/yjs/yjs) – CRDT-based shared document model
 - [y-webrtc](https://github.com/yjs/y-webrtc) – WebRTC-based peer-to-peer provider for y.js
 - [y-indexeddb](https://github.com/yjs/y-indexeddb) - Database adapter to store data persistently, see [the quick guide regarding persistency](/docs/persistency.md).
+- [y-websocket](https://github.com/yjs/y-websocket) and [y-websocket-server](https://github.com/yjs/y-websocket-server) - Classical client server model, used in this project as an alternative in case of WebRTC failure.
 - [Tiptap](https://tiptap.dev/) – Headless, framework-agnostic rich-text editor built on ProseMirror
 - [React](https://react.dev/) – Component-based UI library
 - [Vite](https://vitejs.dev/) – Fast development bundler and dev server

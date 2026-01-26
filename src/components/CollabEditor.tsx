@@ -21,6 +21,7 @@ type CollabEditorProps = {
     roomName: string
     password: string
     userName: string
+    onLeave: () => void
 }
 
 /**
@@ -60,6 +61,7 @@ export default function CollabEditor({
                                          roomName,
                                          password,
                                          userName,
+                                         onLeave,
                                      }: CollabEditorProps) {
     // All peers connected to the same roomName and password end up in the same room and will join the same collaboration session
     const effectiveRoomName = React.useMemo(() => {
@@ -68,7 +70,28 @@ export default function CollabEditor({
 
     const room = useCollabRoom(effectiveRoomName)
 
-    // Observe the shared files in the Yjs Doc
+    // Connected users via Yjs awareness
+    const [users, setUsers] = React.useState<string[]>([])
+
+    React.useEffect(() => {
+        if (!room) return
+        const awareness = room.provider.awareness
+
+        const updateUsers = () => {
+            const names: string[] = []
+            awareness.getStates().forEach((state: any) => {
+                if (state.user?.name) {
+                    names.push(state.user.name)
+                }
+            })
+            setUsers(names)
+        }
+
+        updateUsers()
+        awareness.on("change", updateUsers)
+        return () => awareness.off("change", updateUsers)
+    }, [room])
+
     const fileEntries = useYMapSnapshot(room?.files ?? null)
     const files: FileMeta[] = React.useMemo(
         () =>
@@ -119,17 +142,21 @@ export default function CollabEditor({
     if (!editor) return <div>Loading editor…</div>
 
     return (
-        <div style={{ display: "flex", width: "100%", height: "100%" }}>
+        <div style={{ display: "flex", width: "100%", height: "100%", overflow: "hidden" }}>
             <Sidebar
                 roomName={roomName}
                 files={files.map((f) => ({ id: f.id, name: f.name }))}
                 activeFileId={activeFileId}
                 onAddFile={addFile}
                 onSelectFile={setActiveFileId}
+                onLeave={onLeave}
+                users={users}
             />
 
-            <EditorPanel editor={editor} />
+            {/* Editor area must stretch */}
+            <div style={{ flex: 1, overflow: "hidden" }}>
+                <EditorPanel editor={editor} />
+            </div>
         </div>
     )
-
 }

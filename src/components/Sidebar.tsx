@@ -15,6 +15,8 @@ export type SidebarProps = {
     activeFileId: string
     onAddFile: () => void
     onSelectFile: (fileId: string) => void
+    onLeave: () => void
+    users: string[]
 }
 
 /**
@@ -27,7 +29,15 @@ export type SidebarProps = {
  * @param SidebarProps.onSelectFile {(fileId: string) => void} - Handler to switch the active file
  * @returns JSX sidebar element
  */
-export function Sidebar({roomName, files, activeFileId, onAddFile, onSelectFile}: SidebarProps) {
+export function Sidebar({
+                            roomName,
+                            files,
+                            activeFileId,
+                            onAddFile,
+                            onSelectFile,
+                            onLeave,
+                            users,
+                        }: SidebarProps) {
     return (
         <aside id="sidebar" style={uiStyles.sidebar}>
             <div id="sidebar-header" style={uiStyles.sidebarHeader}>
@@ -39,11 +49,31 @@ export function Sidebar({roomName, files, activeFileId, onAddFile, onSelectFile}
                 </div>
             </div>
 
-            <button id="create-file-button" onClick={onAddFile} style={buttonStyle({fullWidth: true})}>
-                Create New File
+            {/* Back / Home button */}
+            <button
+                style={buttonStyle({ fullWidth: true })}
+                onClick={onLeave}
+            >
+                ← Leave Room
             </button>
 
-            <hr id="sidebar-divider" style={dividerStyle()}/>
+            <hr style={dividerStyle()} />
+
+            {/* Connected users */}
+            <div>
+                <div style={uiStyles.mutedLabel}>Connected Users</div>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                    {users.map((name, i) => (
+                        <li key={i}>{name}</li>
+                    ))}
+                </ul>
+            </div>
+
+            <hr id="sidebar-divider" style={dividerStyle()} />
+
+            <button id="create-file-button" onClick={onAddFile} style={buttonStyle({ fullWidth: true })}>
+                Create New File
+            </button>
 
             <div id="file-list" style={uiStyles.fileList}>
                 {files.map((f) => {

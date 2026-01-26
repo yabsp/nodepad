@@ -21,6 +21,7 @@ function App() {
                     roomName={session.roomName}
                     password={session.password}
                     userName={session.userName}
+                    onLeave={() => setSession(null)}
                 />
             )}
         </div>

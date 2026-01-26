@@ -64,6 +64,7 @@ export const uiStyles = {
         width: UI_TOKENS.sizes.sidebarWidth,
         borderRight: `${UI_TOKENS.sizes.borderWidth}px solid ${UI_TOKENS.colors.border}`,
         padding: UI_TOKENS.spacing.md,
+        fontSize: 14,
     } as const,
 
     sidebarHeader: {
@@ -71,7 +72,7 @@ export const uiStyles = {
     } as const,
 
     mutedLabel: {
-        fontSize: 12,
+        fontSize: 14,
         opacity: 0.7,
     } as const,
 

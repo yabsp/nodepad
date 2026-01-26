@@ -18,6 +18,12 @@ import { uiStyles } from "./uiStyles.ts"
 
 type FileMeta = { id: string } & FileInfo
 
+type CollabEditorProps = {
+    roomName: string
+    password: string
+    userName: string
+}
+
 /**
  * Observe a Y.Map and re-render whenever the map changes, then return a snapshot of its entries for rendering.
  * @param yMap {Y.Map<T> | null} - Yjs map to observe
@@ -51,12 +57,17 @@ function useYMapSnapshot<T>(yMap: Y.Map<T> | null): Array<{ key: string; value: 
  * - delegates UI rendering to Sidebar + EditorPanel
  * @returns JSX element for the collaborative editor experience
  */
-export default function CollabEditor() {
-    // TODO Add a way to create a session in the gui
-    // All peers connected to the same roomName (identifies the collaboration session) end up in the same room
-    const [roomName] = React.useState("Test-Room-02")
-    // Use custom hook for lifecycle of the room
-    const room = useCollabRoom(roomName)
+export default function CollabEditor({
+                                         roomName,
+                                         password,
+                                         userName,
+                                     }: CollabEditorProps) {
+    // All peers connected to the same roomName and password end up in the same room and will join the same collaboration session
+    const effectiveRoomName = React.useMemo(() => {
+        return password ? `${roomName}::${password}` : roomName
+    }, [roomName, password])
+
+    const room = useCollabRoom(effectiveRoomName)
 
     // Observe the shared files in the Yjs Doc
     const fileEntries = useYMapSnapshot(room?.files ?? null)
@@ -96,10 +107,10 @@ export default function CollabEditor() {
             Collaboration.configure({ document: room.yDoc, field: activeFileId }),
             CollaborationCaret.configure({
                 provider: room.provider,
-                user: { name: "User", color: "#4c6fff" },
+                user: { name: userName, color: "#4c6fff" },
             }),
         ]
-    }, [room, activeFileId])
+    }, [room, activeFileId, userName])
 
     // Create the editor instance
     const editor = useEditor({ extensions }, [extensions])

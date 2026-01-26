@@ -1,4 +1,6 @@
 import React from "react"
+import { startPageStyles } from "./uiStyles"
+import { buttonStyle } from "./uiStyles"
 
 type StartPageProps = {
     onJoin: (data: {
@@ -13,37 +15,55 @@ export function StartPage({ onJoin }: StartPageProps) {
     const [roomName, setRoomName] = React.useState("")
     const [password, setPassword] = React.useState("")
 
-    const canJoin = userName && roomName
+    const canJoin = Boolean(userName && roomName)
 
     return (
-        <div style={{ padding: 40 }}>
-            <h1>Join a room</h1>
+        <div style={startPageStyles.wrapper}>
+            <div style={startPageStyles.card}>
+                {/* Project title */}
+                <div>
+                    <div style={startPageStyles.title}>Nodepad</div>
+                </div>
 
-            <div>
-                <label>Name</label><br />
-                <input value={userName} onChange={e => setUserName(e.target.value)} />
-            </div>
+                <div style={startPageStyles.sectionLabel}>
+                    Join or create a room
+                </div>
 
-            <div>
-                <label>Room name</label><br />
-                <input value={roomName} onChange={e => setRoomName(e.target.value)} />
-            </div>
-
-            <div>
-                <label>Password</label><br />
+                {/* Name */}
                 <input
-                    type="password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
+                    style={startPageStyles.input}
+                    placeholder="Your name"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
                 />
-            </div>
 
-            <button
-                disabled={!canJoin}
-                onClick={() => onJoin({ userName, roomName, password })}
-            >
-                Join room
-            </button>
+                {/* Room name */}
+                <input
+                    style={startPageStyles.input}
+                    placeholder="Room name"
+                    value={roomName}
+                    onChange={(e) => setRoomName(e.target.value)}
+                />
+
+                {/* Password */}
+                <input
+                    style={startPageStyles.input}
+                    type="password"
+                    placeholder="Password (optional)"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <div style={startPageStyles.buttonRow}>
+                    <button
+                        style={buttonStyle({ fullWidth: true })}
+                        disabled={!canJoin}
+                        onClick={() => onJoin({ userName, roomName, password })}
+                    >
+                        Join room
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }

@@ -9,9 +9,14 @@ export const UI_TOKENS = {
         border: "#AAAAAA",
         textOnLight: "#111111",
         textOnDark: "#FFFFFF",
-        mutedText: "rgba(0, 0, 0, 0.7)",
-        bg: "#1A1A1A",
-        buttonBg: "#2B2B2B",
+        mutedTextLight: "rgba(0, 0, 0, 0.6)", // NEW: muted text for light mode
+        mutedTextDark: "rgba(255, 255, 255, 0.7)", // NEW: muted text for dark mode
+        bgLight: "#F6F6F6", // NEW: light mode background
+        bgDark: "#1A1A1A", // NEW: dark mode background
+        surfaceLight: "#FFFFFF", // NEW: card / surface background (light)
+        surfaceDark: "#2B2B2B", // NEW: card / surface background (dark)
+        buttonBgLight: "#EDEDED", // NEW
+        buttonBgDark: "#2B2B2B",
         buttonActiveBg: "#666666",
     },
     radii: {
@@ -31,6 +36,15 @@ export const UI_TOKENS = {
 } as const
 
 /**
+ * Detect whether the user prefers dark mode.
+ * Uses the browser's prefers-color-scheme media query.
+ */
+export const prefersDarkMode =
+    typeof window !== "undefined" &&
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+
+/**
  * Shared app-level styles to avoid duplication across components.
  */
 export const uiStyles = {
@@ -38,8 +52,12 @@ export const uiStyles = {
         display: "flex",
         width: "100vw",
         height: "100vh",
-        background: UI_TOKENS.colors.bg,
-        color: UI_TOKENS.colors.textOnDark,
+        background: prefersDarkMode
+            ? UI_TOKENS.colors.bgDark
+            : UI_TOKENS.colors.bgLight,
+        color: prefersDarkMode
+            ? UI_TOKENS.colors.textOnDark
+            : UI_TOKENS.colors.textOnLight,
     } as const,
 
     sidebar: {
@@ -85,6 +103,70 @@ export const uiStyles = {
 } as const
 
 /**
+ * Styles for the start / join page.
+ * Kept separate from editor styles to avoid coupling UI states.
+ */
+export const startPageStyles = {
+    wrapper: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100vw",
+        height: "100vh",
+        background: prefersDarkMode
+            ? UI_TOKENS.colors.bgDark
+            : UI_TOKENS.colors.bgLight,
+        color: prefersDarkMode
+            ? UI_TOKENS.colors.textOnDark
+            : UI_TOKENS.colors.textOnLight,
+    } as const,
+
+    card: {
+        width: 360,
+        padding: UI_TOKENS.spacing.lg,
+        borderRadius: UI_TOKENS.radii.sm,
+        border: `1px solid ${UI_TOKENS.colors.border}`,
+        background: prefersDarkMode
+            ? UI_TOKENS.colors.surfaceDark
+            : UI_TOKENS.colors.surfaceLight,
+        display: "flex",
+        flexDirection: "column",
+        gap: UI_TOKENS.spacing.md,
+    } as const,
+
+    title: {
+        fontSize: 28,
+        fontWeight: 700,
+    } as const,
+
+    sectionLabel: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.05em",
+        opacity: 0.6,
+        marginTop: UI_TOKENS.spacing.sm,
+    } as const,
+
+    input: {
+        padding: "8px 10px",
+        borderRadius: UI_TOKENS.radii.sm,
+        border: `1px solid ${UI_TOKENS.colors.border}`,
+        background: prefersDarkMode
+            ? UI_TOKENS.colors.bgDark
+            : UI_TOKENS.colors.surfaceLight,
+        color: prefersDarkMode
+            ? UI_TOKENS.colors.textOnDark
+            : UI_TOKENS.colors.textOnLight,
+    } as const,
+
+    buttonRow: {
+        display: "flex",
+        gap: UI_TOKENS.spacing.sm,
+        marginTop: UI_TOKENS.spacing.md,
+    } as const,
+}
+
+/**
  * Builds a consistent button style.
  *
  * @param options - Button appearance options
@@ -101,8 +183,15 @@ export function buttonStyle(options?: { active?: boolean; fullWidth?: boolean })
         padding: "6px 10px",
         borderRadius: UI_TOKENS.radii.sm,
         border: `1px solid ${UI_TOKENS.colors.border}`,
-        background: active ? UI_TOKENS.colors.buttonActiveBg : UI_TOKENS.colors.buttonBg,
+        background: active
+            ? UI_TOKENS.colors.buttonActiveBg
+            : prefersDarkMode
+                ? UI_TOKENS.colors.buttonBgDark
+                : UI_TOKENS.colors.buttonBgLight,
         cursor: "pointer",
+        color: prefersDarkMode
+            ? UI_TOKENS.colors.textOnDark
+            : UI_TOKENS.colors.textOnLight,
     }
 }
 
@@ -117,10 +206,16 @@ export function sidebarFileButtonStyle(active: boolean): React.CSSProperties {
         textAlign: "left",
         padding: "8px 10px",
         borderRadius: UI_TOKENS.radii.sm,
-        background: active ? UI_TOKENS.colors.buttonActiveBg : UI_TOKENS.colors.buttonBg,
+        background: active
+            ? UI_TOKENS.colors.buttonActiveBg
+            : prefersDarkMode
+                ? UI_TOKENS.colors.buttonBgDark
+                : UI_TOKENS.colors.buttonBgLight,
         cursor: "pointer",
         border: `1px solid ${UI_TOKENS.colors.border}`,
-        color: UI_TOKENS.colors.textOnDark,
+        color: prefersDarkMode
+            ? UI_TOKENS.colors.textOnDark
+            : UI_TOKENS.colors.textOnLight,
     }
 }
 

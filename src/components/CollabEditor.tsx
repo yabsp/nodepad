@@ -14,7 +14,6 @@ import { useCollabRoom, DEFAULT_FILE } from "../y.js/collabRoom"
 import type { FileInfo } from "../y.js/collabRoom"
 import { Sidebar } from "./Sidebar"
 import { EditorPanel } from "./EditorPanel.tsx"
-import { uiStyles } from "./uiStyles.ts"
 
 type FileMeta = { id: string } & FileInfo
 
@@ -120,7 +119,7 @@ export default function CollabEditor({
     if (!editor) return <div>Loading editor…</div>
 
     return (
-        <div id="app-shell" style={uiStyles.appShell}>
+        <div style={{ display: "flex", width: "100%", height: "100%" }}>
             <Sidebar
                 roomName={roomName}
                 files={files.map((f) => ({ id: f.id, name: f.name }))}
@@ -132,4 +131,5 @@ export default function CollabEditor({
             <EditorPanel editor={editor} />
         </div>
     )
+
 }

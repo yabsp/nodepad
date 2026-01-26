@@ -15,8 +15,12 @@ import type { FileInfo } from "../y.js/collabRoom"
 import { Sidebar } from "./Sidebar"
 import { EditorPanel } from "./EditorPanel.tsx"
 
+
 type FileMeta = { id: string } & FileInfo
 
+/**
+ * Are provided by the StartPage
+ */
 type CollabEditorProps = {
     roomName: string
     password: string
@@ -50,11 +54,14 @@ function useYMapSnapshot<T>(yMap: Y.Map<T> | null): Array<{ key: string; value: 
 }
 
 /**
- * Own collaboration lifecycle which:
- * - derives file list from shared Y.Map
- * - tracks active file
- * - constructs Tiptap editor extensions and editor instance
- * - delegates UI rendering to Sidebar + EditorPanel
+ * Main collaborative editor component.
+ *
+ * Responsibilities:
+ * - Connect to a shared Yjs room
+ * - Track connected users via awareness
+ * - Manage shared files (create / rename / delete)
+ * - Configure Tiptap collaboration + cursors
+ * - Compose the Sidebar and EditorPanel UI
  * @returns JSX element for the collaborative editor experience
  */
 export default function CollabEditor({
@@ -63,14 +70,20 @@ export default function CollabEditor({
                                          userName,
                                          onLeave,
                                      }: CollabEditorProps) {
-    // All peers connected to the same roomName and password end up in the same room and will join the same collaboration session
+    /**
+     * Combine room name and password into a single effective room identifier.
+     * Peers must use the same effective name to join the same collaboration session.
+     */
     const effectiveRoomName = React.useMemo(() => {
         return password ? `${roomName}::${password}` : roomName
     }, [roomName, password])
 
     const room = useCollabRoom(effectiveRoomName)
 
-    // Connected users via Yjs awareness
+    /**
+     * Track currently connected users via Yjs awareness.
+     * This is used for displaying a participant list in the sidebar.
+     */
     const [users, setUsers] = React.useState<string[]>([])
 
     React.useEffect(() => {
@@ -92,6 +105,10 @@ export default function CollabEditor({
         return () => awareness.off("change", updateUsers)
     }, [room])
 
+    /**
+     * Derive a sorted list of shared files from the Yjs map.
+     * Sorting is done locally for stable and predictable UI ordering.
+     */
     const fileEntries = useYMapSnapshot(room?.files ?? null)
     const files: FileMeta[] = React.useMemo(
         () =>
@@ -133,7 +150,7 @@ export default function CollabEditor({
                 provider: room.provider,
                 user: { name: userName, color: "#4c6fff" },
 
-                // Custom render function for a minimal cursor
+                // Custom render function for a cursor
                 render: user => {
                     const caret = document.createElement("span")
                     const offset = (user.clientId ?? 0) % 3
@@ -181,11 +198,14 @@ export default function CollabEditor({
                 activeFileId={activeFileId}
                 onAddFile={addFile}
                 onSelectFile={setActiveFileId}
+
+                // Update shared file name in Yjs map
                 onRenameFile={(id, name) => {
                     const file = room?.files.get(id)
                     if (!file) return
                     room.files.set(id, { ...file, name })
                 }}
+                // Remove file from shared state
                 onDeleteFile={(id) => {
                     room?.files.delete(id)
                     if (activeFileId === id) {

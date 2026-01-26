@@ -9,13 +9,13 @@ export const UI_TOKENS = {
         border: "#AAAAAA",
         textOnLight: "#111111",
         textOnDark: "#FFFFFF",
-        mutedTextLight: "rgba(0, 0, 0, 0.6)", // NEW: muted text for light mode
-        mutedTextDark: "rgba(255, 255, 255, 0.7)", // NEW: muted text for dark mode
-        bgLight: "#F6F6F6", // NEW: light mode background
-        bgDark: "#1A1A1A", // NEW: dark mode background
-        surfaceLight: "#FFFFFF", // NEW: card / surface background (light)
-        surfaceDark: "#2B2B2B", // NEW: card / surface background (dark)
-        buttonBgLight: "#EDEDED", // NEW
+        mutedTextLight: "rgba(0, 0, 0, 0.6)",
+        mutedTextDark: "rgba(255, 255, 255, 0.7)",
+        bgLight: "#F6F6F6",
+        bgDark: "#1A1A1A",
+        surfaceLight: "#FFFFFF",
+        surfaceDark: "#2B2B2B",
+        buttonBgLight: "#EDEDED",
         buttonBgDark: "#2B2B2B",
         buttonActiveBg: "#666666",
     },

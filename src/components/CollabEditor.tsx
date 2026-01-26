@@ -127,9 +127,41 @@ export default function CollabEditor({
         return [
             ...base,
             Collaboration.configure({ document: room.yDoc, field: activeFileId }),
+
+            // Shows remote cursors inside the editor
             CollaborationCaret.configure({
                 provider: room.provider,
                 user: { name: userName, color: "#4c6fff" },
+
+                // Custom render function for a minimal cursor
+                render: user => {
+                    const caret = document.createElement("span")
+                    const offset = (user.clientId ?? 0) % 3
+
+                    caret.style.borderLeft = `2px solid ${user.color || "#4c6fff"}`
+                    caret.style.marginLeft = "-1px"
+                    caret.style.marginRight = "-1px"
+                    caret.style.height = "1em"
+                    caret.style.position = "relative"
+                    caret.style.pointerEvents = "none"
+
+                    const label = document.createElement("div")
+                    label.textContent = user.name || ""
+                    label.style.position = "absolute"
+                    label.style.top = `${-1.4 - offset * 1.1}em`
+                    label.style.left = "0"
+                    label.style.padding = "2px 6px"
+                    label.style.fontSize = "0.7rem"
+                    label.style.borderRadius = "4px"
+                    label.style.background = user.color || "#4c6fff"
+                    label.style.color = "white"
+                    label.style.whiteSpace = "nowrap"
+                    label.style.pointerEvents = "none"
+
+                    caret.appendChild(label)
+
+                    return caret
+                },
             }),
         ]
     }, [room, activeFileId, userName])

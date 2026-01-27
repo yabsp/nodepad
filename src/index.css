@@ -28,6 +28,9 @@ select {
 .ProseMirror {
     font-size: 14px;          /* document text size */
     outline: none;
+
+    padding: 12px 16px;
+    box-sizing: border-box;
 }
 
 /* Light mode */

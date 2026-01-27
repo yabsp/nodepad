@@ -207,11 +207,21 @@ export default function CollabEditor({
                 }}
                 // Remove file from shared state
                 onDeleteFile={(id) => {
-                    room?.files.delete(id)
+                    if (!room) return
+
+                    // Prevent deleting the last remaining file
+                    if (room.files.size <= 1) {
+                        return
+                    }
+
+                    room.files.delete(id)
+
                     if (activeFileId === id) {
-                        setActiveFileId(DEFAULT_FILE)
+                        const next = Array.from(room.files.keys())[0]
+                        setActiveFileId(next)
                     }
                 }}
+
                 onLeave={onLeave}
                 users={users}
             />

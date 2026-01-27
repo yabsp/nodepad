@@ -142,13 +142,14 @@ export function Sidebar({
 
                             {/* Delete */}
                             <button
-                                title="Delete file"
+                                title={files.length <= 1 ? "At least one file is required" : "Delete file"}
+                                disabled={files.length <= 1}
                                 onClick={() => onDeleteFile(f.id)}
                                 style={{
                                     background: "transparent",
                                     border: "none",
-                                    color: "#aaa",
-                                    cursor: "pointer",
+                                    color: files.length <= 1 ? "#555" : "#aaa",
+                                    cursor: files.length <= 1 ? "not-allowed" : "pointer",
                                 }}
                             >
                                 ✕

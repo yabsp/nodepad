@@ -17,7 +17,9 @@ export const UI_TOKENS = {
         surfaceDark: "#2B2B2B",
         buttonBgLight: "#EDEDED",
         buttonBgDark: "#2B2B2B",
-        buttonActiveBg: "#666666",
+        buttonActiveBgLight: "rgba(0, 0, 0, 0.22)",  // light, soft grey
+        buttonActiveBgDark: "rgba(255, 255, 255, 0.35)", // dark, subtle highlight
+
     },
     radii: {
         sm: 8,
@@ -186,7 +188,9 @@ export function buttonStyle(options?: { active?: boolean; fullWidth?: boolean })
         borderRadius: UI_TOKENS.radii.sm,
         border: `1px solid ${UI_TOKENS.colors.border}`,
         background: active
-            ? UI_TOKENS.colors.buttonActiveBg
+            ? prefersDarkMode
+                ? UI_TOKENS.colors.buttonActiveBgDark
+                : UI_TOKENS.colors.buttonActiveBgLight
             : prefersDarkMode
                 ? UI_TOKENS.colors.buttonBgDark
                 : UI_TOKENS.colors.buttonBgLight,
@@ -209,7 +213,9 @@ export function sidebarFileButtonStyle(active: boolean): React.CSSProperties {
         padding: "8px 10px",
         borderRadius: UI_TOKENS.radii.sm,
         background: active
-            ? UI_TOKENS.colors.buttonActiveBg
+            ? prefersDarkMode
+                ? UI_TOKENS.colors.buttonActiveBgDark
+                : UI_TOKENS.colors.buttonActiveBgLight
             : prefersDarkMode
                 ? UI_TOKENS.colors.buttonBgDark
                 : UI_TOKENS.colors.buttonBgLight,

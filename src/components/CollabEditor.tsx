@@ -10,6 +10,7 @@ import Paragraph from "@tiptap/extension-paragraph"
 import Text from "@tiptap/extension-text"
 import Bold from "@tiptap/extension-bold"
 import Italic from "@tiptap/extension-italic"
+import HardBreak from "@tiptap/extension-hard-break"
 import { useCollabRoom, DEFAULT_FILE } from "../y.js/collabRoom"
 import type { FileInfo } from "../y.js/collabRoom"
 import { Sidebar } from "./Sidebar"
@@ -58,6 +59,17 @@ const mdSerializer = new MarkdownSerializer(
     // keep all default node renderers (paragraph, heading, bullet_list, ordered_list, etc.)
     {
         ...defaultMarkdownSerializer.nodes,
+
+        // for Enter
+        paragraph(state, node) {
+            state.renderInline(node)
+            state.closeBlock(node) //  \n\n separation
+        },
+
+        // for Shift+Enter (HardBreak)
+        hardBreak(state) {
+            state.write("  \n") // two spaces + newline
+        },
     },
     // keep all default marks + add HTML fallbacks for unsupported marks
     {
@@ -184,7 +196,17 @@ export default function CollabEditor({
     /** Build TipTap extension list */
     const extensions = React.useMemo(() => {
         // Base schema + marks. Always present to avoid schema errors.
-        const base = [Document, Paragraph, Text, Bold, Italic, Underline, Highlight]
+        const base = [
+            Document,
+            Paragraph,
+            Text,
+            Bold,
+            Italic,
+            Underline,
+            Highlight,
+            HardBreak,
+        ]
+
         if (!room) return base
 
         return [

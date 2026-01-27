@@ -213,6 +213,56 @@ export function Toolbar({ editor, onExport }: ToolbarProps) {
                 H
             </button>
 
+            {/* URL */}
+            <button
+                className="ui-btn ui-btn--light"
+                onMouseDown={(e) => e.preventDefault()} // ✅ keeps selection in editor
+                onClick={() => {
+                    const prev = editor.getAttributes("link").href as string | undefined
+
+                    const url = window.prompt("Enter URL", prev ?? "https://")
+                    if (url === null) return // cancelled
+
+                    const trimmed = url.trim()
+                    if (trimmed === "") {
+                        // If user clears, remove link
+                        editor.chain().focus().unsetLink().run()
+                        return
+                    }
+
+                    const { from, to, empty } = editor.state.selection
+
+                    if (empty) {
+                        // No selection: insert the URL text as a clickable link
+                        editor
+                            .chain()
+                            .focus()
+                            .insertContent([
+                                {
+                                    type: "text",
+                                    text: trimmed,
+                                    marks: [{ type: "link", attrs: { href: trimmed } }],
+                                },
+                            ])
+                            .run()
+                        return
+                    }
+
+                    // Selection exists: apply link to selected text
+                    editor
+                        .chain()
+                        .focus()
+                        .extendMarkRange("link")
+                        .setLink({ href: trimmed })
+                        .run()
+                }}
+                style={buttonStyle({ active: editor.isActive("link") })}
+                title="Insert / edit link"
+            >
+                🔗
+            </button>
+
+
             {/* Export buttons */}
             <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
                 <button

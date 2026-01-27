@@ -16,6 +16,7 @@ import History from "@tiptap/extension-history"
 import BulletList from "@tiptap/extension-bullet-list"
 import OrderedList from "@tiptap/extension-ordered-list"
 import ListItem from "@tiptap/extension-list-item"
+import Link from "@tiptap/extension-link"
 import { useCollabRoom, DEFAULT_FILE } from "../y.js/collabRoom"
 import type { FileInfo } from "../y.js/collabRoom"
 import { Sidebar } from "./Sidebar"
@@ -64,12 +65,40 @@ function useYMapSnapshot<T>(yMap: Y.Map<T> | null): Array<{ key: string; value: 
 function serializeTxt(doc: any): string {
     const lines: string[] = []
 
+    const inlineWithLinks = (node: any): string => {
+        let out = ""
+
+        const walk = (n: any) => {
+            // text node
+            if (n.isText) {
+                const link = n.marks?.find((m: any) => m.type?.name === "link")
+                if (link) out += `${n.text} [${link.attrs.href}]`
+                else out += n.text
+                return
+            }
+
+            // hard break node (Shift+Enter)
+            if (n.type?.name === "hardBreak") {
+                out += "\n"
+                return
+            }
+
+            // otherwise: recurse into children
+            if (n.content) {
+                n.forEach((child: any) => walk(child))
+            }
+        }
+
+        walk(node)
+        return out
+    }
+
     const renderNode = (node: any) => {
         // bullet list
         if (node.type.name === "bulletList") {
             node.forEach((item: any) => {
-                const text = item.textBetween(0, item.content.size, "\n")
-                lines.push(`- ${text}`)
+                // listItem usually contains a paragraph
+                lines.push(`- ${inlineWithLinks(item)}`.trimEnd())
             })
             lines.push("")
             return
@@ -79,29 +108,21 @@ function serializeTxt(doc: any): string {
         if (node.type.name === "orderedList") {
             let i = 1
             node.forEach((item: any) => {
-                const text = item.textBetween(0, item.content.size, "\n")
-                lines.push(`${i}. ${text}`)
+                lines.push(`${i}. ${inlineWithLinks(item)}`.trimEnd())
                 i++
             })
             lines.push("")
             return
         }
 
-        // everything else
-        lines.push(
-            node.textBetween(
-                0,
-                node.content.size,
-                "\n",
-                (leaf: any) => (leaf.type?.name === "hardBreak" ? "\n" : "")
-            )
-        )
+        // everything else (paragraphs, headings, etc.)
+        lines.push(inlineWithLinks(node).trimEnd())
         lines.push("")
     }
 
     doc.forEach((node: any) => renderNode(node))
 
-    // Trim trailing empty lines
+    // trim trailing empty lines
     while (lines.length && lines[lines.length - 1] === "") {
         lines.pop()
     }
@@ -269,6 +290,11 @@ export default function CollabEditor({
             Highlight,
             HardBreak,
             History,
+            Link.configure({
+                openOnClick: true,
+                autolink: true,
+                linkOnPaste: true,
+            }),
         ]
 
         if (!room) return base

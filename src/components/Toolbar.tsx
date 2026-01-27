@@ -16,6 +16,7 @@ export type ToolbarProps = {
  */
 export function Toolbar({ editor, onExport }: ToolbarProps) {
     const [, forceRender] = React.useReducer((x) => x + 1, 0)
+    const [styleOpen, setStyleOpen] = React.useState(false)
 
     React.useEffect(() => {
         if (!editor) return
@@ -32,10 +33,99 @@ export function Toolbar({ editor, onExport }: ToolbarProps) {
         }
     }, [editor])
 
+    // Close dropdown when clicking outside
+    React.useEffect(() => {
+        if (!styleOpen) return
+        const onDown = () => setStyleOpen(false)
+        window.addEventListener("mousedown", onDown)
+        return () => window.removeEventListener("mousedown", onDown)
+    }, [styleOpen])
+
     if (!editor) return null
+
+    const currentBlockLabel = () => {
+        if (editor.isActive("heading", { level: 1 })) return "Heading 1"
+        if (editor.isActive("heading", { level: 2 })) return "Heading 2"
+        if (editor.isActive("heading", { level: 3 })) return "Heading 3"
+        return "Normal text"
+    }
 
     return (
         <div id="toolbar" style={uiStyles.toolbarRow}>
+            {/* Text style dropdown */}
+            <div style={{ position: "relative" }}>
+                <button
+                    style={buttonStyle({})}
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        setStyleOpen((o) => !o)
+                    }}
+                    title="Text style"
+                >
+                    {currentBlockLabel()} ▼
+                </button>
+
+                {styleOpen && (
+                    <div
+                        onMouseDown={(e) => e.stopPropagation()}
+                        style={{
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            background: "#222",
+                            borderRadius: 6,
+                            padding: 4,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 2,
+                            zIndex: 100,
+                            minWidth: 160,
+                        }}
+                    >
+                        <button
+                            style={buttonStyle({})}
+                            onClick={() => {
+                                editor.chain().focus().setParagraph().run()
+                                setStyleOpen(false)
+                            }}
+                        >
+                            Normal text
+                        </button>
+
+                        <button
+                            style={buttonStyle({})}
+                            onClick={() => {
+                                editor.chain().focus().toggleHeading({ level: 1 }).run()
+                                setStyleOpen(false)
+                            }}
+                        >
+                            Heading 1
+                        </button>
+
+                        <button
+                            style={buttonStyle({})}
+                            onClick={() => {
+                                editor.chain().focus().toggleHeading({ level: 2 }).run()
+                                setStyleOpen(false)
+                            }}
+                        >
+                            Heading 2
+                        </button>
+
+                        <button
+                            style={buttonStyle({})}
+                            onClick={() => {
+                                editor.chain().focus().toggleHeading({ level: 3 }).run()
+                                setStyleOpen(false)
+                            }}
+                        >
+                            Heading 3
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {/* Inline formatting */}
             <button
                 className="ui-btn ui-btn--light"
                 onClick={() => editor.chain().focus().toggleBold().run()}
@@ -75,7 +165,7 @@ export function Toolbar({ editor, onExport }: ToolbarProps) {
                 H
             </button>
 
-            {/* Export buttons*/}
+            {/* Export buttons */}
             <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
                 <button
                     style={buttonStyle({})}

@@ -11,6 +11,7 @@ import Text from "@tiptap/extension-text"
 import Bold from "@tiptap/extension-bold"
 import Italic from "@tiptap/extension-italic"
 import HardBreak from "@tiptap/extension-hard-break"
+import Heading from "@tiptap/extension-heading"
 import { useCollabRoom, DEFAULT_FILE } from "../y.js/collabRoom"
 import type { FileInfo } from "../y.js/collabRoom"
 import { Sidebar } from "./Sidebar"
@@ -200,6 +201,7 @@ export default function CollabEditor({
             Document,
             Paragraph,
             Text,
+            Heading.configure({ levels: [1, 2, 3] }),
             Bold,
             Italic,
             Underline,

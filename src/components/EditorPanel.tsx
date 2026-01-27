@@ -17,11 +17,22 @@ export type EditorPanelProps = {
  */
 export function EditorPanel({ editor, onExport }: EditorPanelProps) {
     return (
-        <main id="editor-panel" style={uiStyles.editorPanel}>
-            <div id="editor-container" style={uiStyles.editorContainer}>
+        <div style={uiStyles.editorPanel}>
+            <div style={uiStyles.editorContainer}>
                 <Toolbar editor={editor} onExport={onExport} />
-                <EditorContent editor={editor} />
+
+                <div
+                    style={{
+                        flex: 1,
+                        overflowY: "auto",
+                        padding: 16,
+                        boxSizing: "border-box",
+                    }}
+                >
+                    <EditorContent editor={editor} />
+                </div>
+
             </div>
-        </main>
+        </div>
     )
 }

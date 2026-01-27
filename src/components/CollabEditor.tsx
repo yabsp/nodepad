@@ -393,7 +393,7 @@ export default function CollabEditor({
     if (!editor) return <div>Loading editor…</div>
 
     return (
-        <div style={{ display: "flex", width: "100%", height: "100%", overflow: "hidden" }}>
+        <div style={{ display: "flex", width: "100%", height: "100vh" }}>
             <Sidebar
                 roomName={roomName}
                 files={files.map((f) => ({ id: f.id, name: f.name }))}
@@ -429,11 +429,8 @@ export default function CollabEditor({
             />
 
             {/* Editor area must stretch */}
-            <div style={{ flex: 1, overflow: "hidden" }}>
-                <EditorPanel
-                    editor={editor}
-                    onExport={exportFile}
-                />
+            <div style={{ flex: 1, minHeight: 0 }}>
+                <EditorPanel editor={editor} onExport={exportFile} />
             </div>
         </div>
     )

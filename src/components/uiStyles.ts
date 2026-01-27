@@ -67,10 +67,16 @@ export const uiStyles = {
         borderRight: `${UI_TOKENS.sizes.borderWidth}px solid ${UI_TOKENS.colors.border}`,
         padding: UI_TOKENS.spacing.md,
         fontSize: 14,
+        background: prefersDarkMode
+            ? UI_TOKENS.colors.bgDark
+            : UI_TOKENS.colors.bgLight,
     } as const,
 
     sidebarHeader: {
         marginBottom: UI_TOKENS.spacing.md,
+        background: prefersDarkMode
+            ? UI_TOKENS.colors.bgDark
+            : UI_TOKENS.colors.bgLight,
     } as const,
 
     mutedLabel: {
@@ -91,19 +97,28 @@ export const uiStyles = {
 
     editorPanel: {
         flex: 1,
-        padding: UI_TOKENS.spacing.lg,
-    } as const,
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        background: prefersDarkMode
+            ? UI_TOKENS.colors.bgDark
+            : UI_TOKENS.colors.bgLight,
+    },
+
 
     editorContainer: {
         maxWidth: UI_TOKENS.sizes.editorMaxWidth,
         height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 0,
     } as const,
 
     toolbarRow: {
         display: "flex",
         gap: UI_TOKENS.spacing.sm,
         marginBottom: UI_TOKENS.spacing.md,
-    } as const,
+    },
 } as const
 
 /**

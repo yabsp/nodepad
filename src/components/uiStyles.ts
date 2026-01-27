@@ -118,6 +118,8 @@ export const uiStyles = {
         display: "flex",
         gap: UI_TOKENS.spacing.sm,
         marginBottom: UI_TOKENS.spacing.md,
+        paddingLeft: UI_TOKENS.spacing.lg,
+        paddingRight: UI_TOKENS.spacing.lg,
     },
 } as const
 

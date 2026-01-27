@@ -36,6 +36,21 @@ type CollabEditorProps = {
     onLeave: () => void
 }
 
+
+/**
+ * Colors for cursers
+ */
+const CURSOR_COLORS = [
+    "#4c6fff", // blue
+    "#ff6b6b", // red
+    "#2ecc71", // green
+    "#f1c40f", // yellow
+    "#9b59b6", // purple
+    "#e67e22", // orange
+    "#1abc9c", // teal
+]
+
+
 /**
  * Observe a Y.Map and re-render whenever the map changes, then return a snapshot of its entries for rendering.
  * @param yMap {Y.Map<T> | null} - Yjs map to observe
@@ -59,16 +74,6 @@ function useYMapSnapshot<T>(yMap: Y.Map<T> | null): Array<{ key: string; value: 
     const out: Array<{ key: string; value: T }> = []
     yMap.forEach((value, key) => out.push({ key, value }))
     return out
-}
-
-function randomColorFromString(input: string): string {
-    let hash = 0
-    for (let i = 0; i < input.length; i++) {
-        hash = input.charCodeAt(i) + ((hash << 5) - hash)
-    }
-
-    const hue = Math.abs(hash) % 360
-    return `hsl(${hue}, 70%, 55%)`
 }
 
 function serializeTxt(doc: any): string {
@@ -207,10 +212,13 @@ export default function CollabEditor({
                                          userName,
                                          onLeave,
                                      }: CollabEditorProps) {
-    const userColor = React.useMemo(
-        () => randomColorFromString(userName),
-        [userName]
-    )
+    const userColor = React.useMemo(() => {
+        let hash = 0
+        for (let i = 0; i < userName.length; i++) {
+            hash = userName.charCodeAt(i) + ((hash << 5) - hash)
+        }
+        return CURSOR_COLORS[Math.abs(hash) % CURSOR_COLORS.length]
+    }, [userName])
 
     /**
      * Combine room name and password into a single effective room identifier.

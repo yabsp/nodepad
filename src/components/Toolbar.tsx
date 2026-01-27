@@ -153,6 +153,26 @@ export function Toolbar({ editor, onExport }: ToolbarProps) {
                 )}
             </div>
 
+            {/* Lists */}
+            <button
+                className="ui-btn ui-btn--light"
+                onClick={() => editor.chain().focus().toggleBulletList().run()}
+                style={buttonStyle({ active: editor.isActive("bulletList") })}
+                title="Bullet list"
+            >
+                •
+            </button>
+
+            <button
+                className="ui-btn ui-btn--light"
+                onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                style={buttonStyle({ active: editor.isActive("orderedList") })}
+                title="Numbered list"
+            >
+                1.
+            </button>
+
+
             {/* Inline formatting */}
             <button
                 className="ui-btn ui-btn--light"

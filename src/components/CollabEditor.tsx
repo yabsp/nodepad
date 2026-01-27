@@ -13,6 +13,9 @@ import Italic from "@tiptap/extension-italic"
 import HardBreak from "@tiptap/extension-hard-break"
 import Heading from "@tiptap/extension-heading"
 import History from "@tiptap/extension-history"
+import BulletList from "@tiptap/extension-bullet-list"
+import OrderedList from "@tiptap/extension-ordered-list"
+import ListItem from "@tiptap/extension-list-item"
 import { useCollabRoom, DEFAULT_FILE } from "../y.js/collabRoom"
 import type { FileInfo } from "../y.js/collabRoom"
 import { Sidebar } from "./Sidebar"
@@ -57,10 +60,64 @@ function useYMapSnapshot<T>(yMap: Y.Map<T> | null): Array<{ key: string; value: 
     return out
 }
 
+
+function serializeTxt(doc: any): string {
+    const lines: string[] = []
+
+    const renderNode = (node: any) => {
+        // bullet list
+        if (node.type.name === "bulletList") {
+            node.forEach((item: any) => {
+                const text = item.textBetween(0, item.content.size, "\n")
+                lines.push(`- ${text}`)
+            })
+            lines.push("")
+            return
+        }
+
+        // ordered list
+        if (node.type.name === "orderedList") {
+            let i = 1
+            node.forEach((item: any) => {
+                const text = item.textBetween(0, item.content.size, "\n")
+                lines.push(`${i}. ${text}`)
+                i++
+            })
+            lines.push("")
+            return
+        }
+
+        // everything else
+        lines.push(
+            node.textBetween(
+                0,
+                node.content.size,
+                "\n",
+                (leaf: any) => (leaf.type?.name === "hardBreak" ? "\n" : "")
+            )
+        )
+        lines.push("")
+    }
+
+    doc.forEach((node: any) => renderNode(node))
+
+    // Trim trailing empty lines
+    while (lines.length && lines[lines.length - 1] === "") {
+        lines.pop()
+    }
+
+    return lines.join("\n")
+}
+
 const mdSerializer = new MarkdownSerializer(
     // keep all default node renderers (paragraph, heading, bullet_list, ordered_list, etc.)
     {
         ...defaultMarkdownSerializer.nodes,
+
+        // alias tiptap list node names to PM markdown renderers
+        bulletList: defaultMarkdownSerializer.nodes.bullet_list,
+        orderedList: defaultMarkdownSerializer.nodes.ordered_list,
+        listItem: defaultMarkdownSerializer.nodes.list_item,
 
         // for Enter
         paragraph(state, node) {
@@ -203,6 +260,9 @@ export default function CollabEditor({
             Paragraph,
             Text,
             Heading.configure({ levels: [1, 2, 3] }),
+            BulletList,
+            OrderedList,
+            ListItem,
             Bold,
             Italic,
             Underline,
@@ -269,7 +329,7 @@ export default function CollabEditor({
             let content = ""
 
             if (format === "txt") {
-                content = editor.getText()
+                content = serializeTxt(editor.state.doc)
             } else {
                 const state = editor.state
                 content = mdSerializer.serialize(state.doc)

@@ -5,6 +5,7 @@ import { buttonStyle, uiStyles } from "./uiStyles"
 /** Hold Tiptap editor instance */
 export type ToolbarProps = {
     editor: Editor | null
+    onExport: (format: "txt" | "md") => void
 }
 
 /**
@@ -13,7 +14,7 @@ export type ToolbarProps = {
  * @param ToolbarProps.editor {Editor | null} - Tiptap editor instance used to execute formatting commands
  * @returns JSX toolbar element
  */
-export function Toolbar({ editor }: ToolbarProps) {
+export function Toolbar({ editor, onExport }: ToolbarProps) {
     const [, forceRender] = React.useReducer((x) => x + 1, 0)
 
     React.useEffect(() => {
@@ -73,6 +74,25 @@ export function Toolbar({ editor }: ToolbarProps) {
             >
                 H
             </button>
+
+            {/* Export buttons*/}
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+                <button
+                    style={buttonStyle({})}
+                    onClick={() => onExport("txt")}
+                    title="Export as TXT"
+                >
+                    Export TXT
+                </button>
+
+                <button
+                    style={buttonStyle({})}
+                    onClick={() => onExport("md")}
+                    title="Export as Markdown"
+                >
+                    Export MD
+                </button>
+            </div>
         </div>
     )
 }

@@ -14,6 +14,7 @@ import { useCollabRoom, DEFAULT_FILE } from "../y.js/collabRoom"
 import type { FileInfo } from "../y.js/collabRoom"
 import { Sidebar } from "./Sidebar"
 import { EditorPanel } from "./EditorPanel.tsx"
+import {defaultMarkdownSerializer, MarkdownSerializer} from "prosemirror-markdown"
 
 
 type FileMeta = { id: string } & FileInfo
@@ -52,6 +53,41 @@ function useYMapSnapshot<T>(yMap: Y.Map<T> | null): Array<{ key: string; value: 
     yMap.forEach((value, key) => out.push({ key, value }))
     return out
 }
+
+const mdSerializer = new MarkdownSerializer(
+    // keep all default node renderers (paragraph, heading, bullet_list, ordered_list, etc.)
+    {
+        ...defaultMarkdownSerializer.nodes,
+    },
+    // keep all default marks + add HTML fallbacks for unsupported marks
+    {
+        ...defaultMarkdownSerializer.marks,
+
+        bold:
+            defaultMarkdownSerializer.marks.strong ??
+            defaultMarkdownSerializer.marks.bold,
+        italic:
+            defaultMarkdownSerializer.marks.em ??
+            defaultMarkdownSerializer.marks.italic,
+
+        // underlines are marked as "u"
+        underline: {
+            open: "<u>",
+            close: "</u>",
+            mixable: true,
+            expelEnclosingWhitespace: true,
+        },
+
+        // highlighted are marked as "mark"
+        highlight: {
+            open: "<mark>",
+            close: "</mark>",
+            mixable: true,
+            expelEnclosingWhitespace: true,
+        },
+    }
+)
+
 
 /**
  * Main collaborative editor component.
@@ -135,6 +171,16 @@ export default function CollabEditor({
         setActiveFileId(id)
     }, [room])
 
+    function downloadBlob(blob: Blob, name: string, ext: string) {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `${name}.${ext}`
+        a.click()
+        URL.revokeObjectURL(url)
+    }
+
+
     /** Build TipTap extension list */
     const extensions = React.useMemo(() => {
         // Base schema + marks. Always present to avoid schema errors.
@@ -186,6 +232,36 @@ export default function CollabEditor({
     // Create the editor instance
     const editor = useEditor({ extensions }, [extensions])
 
+    /** Export Function */
+    const exportFile = React.useCallback(
+        (format: "txt" | "md") => {
+            if (!editor || !room) return
+
+            const file = room.files.get(activeFileId)
+            const fileName = file?.name || "document"
+
+            let content = ""
+
+            if (format === "txt") {
+                content = editor.getText()
+            } else {
+                const state = editor.state
+                content = mdSerializer.serialize(state.doc)
+            }
+
+            const blob = new Blob([content], {
+                type:
+                    format === "txt"
+                        ? "text/plain;charset=utf-8"
+                        : "text/markdown;charset=utf-8",
+            })
+
+            downloadBlob(blob, fileName, format)
+        },
+        [editor, room, activeFileId]
+    )
+
+
     // Display loading screens to prevent crashes during loading
     if (!room) return <div>Connecting…</div>
     if (!editor) return <div>Loading editor…</div>
@@ -228,7 +304,10 @@ export default function CollabEditor({
 
             {/* Editor area must stretch */}
             <div style={{ flex: 1, overflow: "hidden" }}>
-                <EditorPanel editor={editor} />
+                <EditorPanel
+                    editor={editor}
+                    onExport={exportFile}
+                />
             </div>
         </div>
     )

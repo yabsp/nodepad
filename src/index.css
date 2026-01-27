@@ -33,12 +33,22 @@ select {
     box-sizing: border-box;
 }
 
+.ProseMirror a {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
 /* Light mode */
 @media (prefers-color-scheme: light) {
     .ProseMirror {
         border: 2px solid #000;
         background: #ffffff;
         color: #000000;
+    }
+
+    .ProseMirror a {
+        color: #1a4cff;
     }
 
     button.active {
@@ -63,6 +73,10 @@ select {
         border: 2px solid #fff;
         background: #242424;
         color: #ffffff;
+    }
+
+    .ProseMirror a {
+        color: #6aa9ff;
     }
 
     button.active {

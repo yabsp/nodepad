@@ -61,6 +61,15 @@ function useYMapSnapshot<T>(yMap: Y.Map<T> | null): Array<{ key: string; value: 
     return out
 }
 
+function randomColorFromString(input: string): string {
+    let hash = 0
+    for (let i = 0; i < input.length; i++) {
+        hash = input.charCodeAt(i) + ((hash << 5) - hash)
+    }
+
+    const hue = Math.abs(hash) % 360
+    return `hsl(${hue}, 70%, 55%)`
+}
 
 function serializeTxt(doc: any): string {
     const lines: string[] = []
@@ -198,6 +207,11 @@ export default function CollabEditor({
                                          userName,
                                          onLeave,
                                      }: CollabEditorProps) {
+    const userColor = React.useMemo(
+        () => randomColorFromString(userName),
+        [userName]
+    )
+
     /**
      * Combine room name and password into a single effective room identifier.
      * Peers must use the same effective name to join the same collaboration session.
@@ -306,7 +320,7 @@ export default function CollabEditor({
             // Shows remote cursors inside the editor
             CollaborationCaret.configure({
                 provider: room.provider,
-                user: { name: userName, color: "#4c6fff" },
+                user: { name: userName, color: userColor },
 
                 // Custom render function for a cursor
                 render: user => {

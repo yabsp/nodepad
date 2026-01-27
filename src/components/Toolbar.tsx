@@ -230,7 +230,7 @@ export function Toolbar({ editor, onExport }: ToolbarProps) {
                         return
                     }
 
-                    const { from, to, empty } = editor.state.selection
+                    const { empty } = editor.state.selection
 
                     if (empty) {
                         // No selection: insert the URL text as a clickable link

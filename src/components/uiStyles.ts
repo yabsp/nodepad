@@ -84,6 +84,7 @@ export const uiStyles = {
         display: "flex",
         flexDirection: "column",
         gap: UI_TOKENS.spacing.xs,
+        marginTop: 12
     } as const,
 
     editorPanel: {

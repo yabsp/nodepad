@@ -52,6 +52,34 @@ export function Toolbar({ editor, onExport }: ToolbarProps) {
 
     return (
         <div id="toolbar" style={uiStyles.toolbarRow}>
+            {/* Undo / Redo */}
+            <button
+                className="ui-btn ui-btn--light"
+                onClick={() => editor.chain().focus().undo().run()}
+                disabled={!editor.can().chain().focus().undo().run()}
+                style={{
+                    ...buttonStyle({}),
+                    fontSize: "16px",
+                }}
+                title="Undo (Ctrl/Cmd + Z)"
+            >
+                ⟲
+            </button>
+
+            <button
+                className="ui-btn ui-btn--light"
+                onClick={() => editor.chain().focus().redo().run()}
+                disabled={!editor.can().chain().focus().redo().run()}
+                style={{
+                    ...buttonStyle({}),
+                    fontSize: "16px",
+                }}
+                title="Redo (Ctrl/Cmd + Shift + Z)"
+            >
+                ⟳
+            </button>
+
+
             {/* Text style dropdown */}
             <div style={{ position: "relative" }}>
                 <button

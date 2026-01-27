@@ -12,6 +12,7 @@ import Bold from "@tiptap/extension-bold"
 import Italic from "@tiptap/extension-italic"
 import HardBreak from "@tiptap/extension-hard-break"
 import Heading from "@tiptap/extension-heading"
+import History from "@tiptap/extension-history"
 import { useCollabRoom, DEFAULT_FILE } from "../y.js/collabRoom"
 import type { FileInfo } from "../y.js/collabRoom"
 import { Sidebar } from "./Sidebar"
@@ -207,6 +208,7 @@ export default function CollabEditor({
             Underline,
             Highlight,
             HardBreak,
+            History,
         ]
 
         if (!room) return base

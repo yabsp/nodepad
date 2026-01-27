@@ -3,6 +3,7 @@ import {WebrtcProvider} from "y-webrtc"
 import React from "react"
 import { IndexeddbPersistence } from "y-indexeddb"
 import { WebsocketProvider } from "y-websocket"
+import { Awareness } from "y-protocols/awareness"
 import { SIGNALING, domain } from "../config/signaling"
 /**
  * Collaborative file metadata stored in the shared Y.Doc.
@@ -39,14 +40,22 @@ export function useCollabRoom(roomName: string) {
     React.useEffect(() => {
         // Create a new Y.Doc and hold file index map and per-file editor states for this room
         const yDoc = new Y.Doc()
+
+        const awareness = new Awareness(yDoc)
+
         // Connect peers who share the same roomName and synchronize the Y.Doc updates over WebRTC
-        const provider = new WebrtcProvider(roomName, yDoc, {signaling: SIGNALING})
+        const provider = new WebrtcProvider(roomName, yDoc, {
+            signaling: SIGNALING,
+            awareness: awareness
+        })
 
 
         const websocketProvider = new WebsocketProvider(
             domain + "/yjs",
             roomName,
-            yDoc
+            yDoc, {
+                awareness: awareness
+            }
         )
 
         // indexeddb persistence

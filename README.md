@@ -4,7 +4,12 @@
 [![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tiptap](https://img.shields.io/badge/tiptap-000000?style=for-the-badge&logo=tiptap&logoColor=white)](https://tiptap.dev/)
 [![Y.js](https://img.shields.io/badge/y.js-orange?style=for-the-badge&logo=y.js&logoColor=white)](https://yjs.dev/)
-# Nodepad
+
+<h1 align="center">
+  <img src="public/nodepad.svg" width="210" />
+  <br />
+  Nodepad
+</h1>
 
 Nodepad is a collaborative text editor built on a Hybrid Peer-to-Peer architecture using Y.js. It leverages both WebRTC and WebSockets to ensure real-time synchronization is fast, efficient, and reliable across any network.
 
@@ -110,11 +115,13 @@ Some modern browsers like Zen Browser (Firefox Fork) seem to have trouble connec
 
 - [X] Visible shared cursors
 
-- [ ] Editor Toolbar (Bold, Italic, Underline)
+- [X] Editor Toolbar (Bold, Italic, Underline)
 
-- [ ] Improved UI with Tiptap
+- [X] Improved UI with Tiptap
 
-- [ ] Client awareness list (Who is online)
+- [X] Client awareness list (Who is online)
+
+- [X] Document Export
 
 ---
 

@@ -105,12 +105,6 @@ Then open the website (default:http://localhost:5173).
 
 ---
 
-## Known Problems
-
-Some modern browsers like Zen Browser (Firefox Fork) seem to have trouble connecting due to ICE-candidates. Try Safari or Google Chrome if you having troubles with ICE (check browser logs).
-
----
-
 ## Roadmap
 
 - [X] Visible shared cursors
